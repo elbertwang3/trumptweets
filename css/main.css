@@ -1,0 +1,205 @@
+.cell-g {
+	cursor: pointer;
+}
+body {
+	margin: 0;
+}
+.cell-g path {
+  fill: none;
+
+   stroke-linecap: round;
+  pointer-events: all;
+}
+.beeswarm {
+	position: relative;
+}
+.beeswarm .tooltip {
+
+
+    position: absolute;
+}
+
+.cellcircle {
+	stroke: black;
+	stroke-width: 0.5px;
+	  cursor:pointer;
+}
+
+
+
+.cellcircle.active{
+	stroke-width: 2px;
+}
+
+.tooltip {
+	pointer-events: none;
+}
+
+
+.logo {
+	text-align: center;
+	display: block;
+	padding: 1.5rem;
+
+
+}
+
+.tv {
+	position: relative;
+	margin: auto;
+	display: block;
+	height: 192.89px;
+	width: 350px;
+}
+
+.tvpng {
+	position: absolute;
+}
+
+.tvvideo {
+	position: absolute;
+	left: 8%;
+	top: 5%;
+}
+
+.small {
+	font-family: "Roboto";
+	font-size: 18px;
+	font-weight: 700;
+	text-transform: uppercase;
+	font-variant: small-caps;
+	line-height: 1.5;
+
+}
+
+.large {
+	font-family: "Roboto";
+	font-size: 60px;
+	font-weight: 900;
+		text-transform: uppercase;
+		line-height: 60px;
+
+}
+
+.title {
+	padding-top: 6.5rem;
+	padding-bottom: 1rem;
+	/*padding-bottom: 1rem;*/
+}
+
+
+#intro p {
+
+	text-align: center;
+	color: #ffffff;
+
+}
+
+.title p {
+		margin: 0;
+}
+
+#intro {
+	background-color: #00aced;
+}
+
+.byline-div {
+	padding-top: 2.2rem;
+	padding-bottom: 1rem;
+}
+.byline {
+	font-family: "Open Sans";
+	font-size: 15px;
+	
+	
+
+
+}
+
+.lede {
+	margin-top: 100px;
+	display: block;
+	margin: 0 auto;
+	font-family: "Open Sans";
+	font-size: 16px;
+	line-height: 1.7;
+	max-width: 560px;
+	
+
+
+}
+
+.lede-div {
+	padding-top: 1rem;
+	padding-bottom: 2rem;
+}
+
+.byline .bold {
+	font-weight: 600;
+}
+
+#intro .prose {
+	display: block;
+	margin: auto;
+	text-align: center;
+	font-family: "Merriweather";
+	font-size: 16;
+	line-height: 1.8;
+	max-width: 600px;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+.step .prose {
+	display: block;
+	margin: auto;
+	text-align: left;
+	font-family: "Merriweather";
+	font-size: 16;
+	line-height: 1.8;
+	max-width: 400px;
+	padding: 1rem;
+
+}
+#intro .prose:last-child {
+	padding-bottom: 3rem;
+
+}
+#graphic {
+	position: relative;
+}
+#sections {
+	position: relative;
+  display: inline-block;
+  max-width: 400px;
+  top: 0px;
+  z-index: 90;
+  margin-top: 2rem;
+  margin-left: 2rem;
+}
+
+.step {
+	 margin-bottom: 200px;
+}
+
+#vis {
+	display: inline-block;
+
+
+  z-index: 100;
+
+  max-width: 1000px;
+}
+
+.is_fixed {
+	position: fixed;
+top: 115;
+
+}
+
+.is_unfixed {
+	position: absolute;
+	top: 200;
+
+}
+
