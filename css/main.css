@@ -141,7 +141,7 @@ body {
 #intro .prose {
 	display: block;
 	margin: auto;
-	text-align: center;
+	text-align: left;
 	font-family: "Merriweather";
 	font-size: 16;
 	line-height: 1.8;
@@ -203,3 +203,49 @@ top: 115;
 
 }
 
+.annotation-line {
+    stroke: #808080;
+    stroke-width: 5px;
+}
+
+
+.annnotation-text {
+    text-anchor: end;
+    -webkit-transform: translateX(-10px);
+    transform: translateX(-10px);
+    dominant-baseline: middle;
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 14px;
+    fill: #808080;
+    /* text-shadow: 0 2px 0 #ffffff, 2px 0 0 #ffffff, 0 -2px 0 #ffffff, -2px 0 0 #ffffff; */
+    letter-spacing: .2px;
+}
+
+.dividing-line {
+	stroke: #d3d3d3;
+	stroke-width: 2px;
+}
+
+.average-text-label {
+	 font-size: 10px;
+	  pointer-events: none;
+	   text-transform: uppercase;
+	color: black;
+	font-family: "Roboto";
+}
+
+.average-line {
+	stroke: black;
+	stroke-width: 2px;
+}
+
+
+.cellcircle.selected {
+	/*stroke-width: 2px;*/
+}
+
+.cellcircle.unselected {
+	fill: #d3d3d3;
+	opacity: 0.1;
+}

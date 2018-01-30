@@ -14,7 +14,7 @@ var scrollVis = function(greatesthits) {
 							//.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
 							.range([bsmargin.left, bswidth-bsmargin.right])
 	var colorScale = d3.scaleLinear()
-		.domain([14,0,-13]).range(["#2161fa","#ffffff","#ff3333"]);
+		.domain([14,0,-13]).range(["#003366","#ffffff","#8b0000"]);
 
 
 	//retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
@@ -29,6 +29,12 @@ var scrollVis = function(greatesthits) {
 	      tooltip.style("visibility",null);
 	    });
 
+	var parseDate = d3.timeParse("%Y-%m-%d")
+
+
+
+
+
 	
 
 	var activateFunctions = [];
@@ -38,45 +44,55 @@ var scrollVis = function(greatesthits) {
 	    selection.each(function (rawData) {
 	    	console.log(rawData);
 	    	greatesthits = rawData;
-		bssvg = beeswarmdiv.append("svg")
-			.attr("width", bswidth)
-			.attr("height", bsheight)
+			bssvg = beeswarmdiv.append("svg")
+				.attr("width", bswidth)
+				.attr("height", bsheight)
+
+			var defs = bssvg.append("svg:defs")
+			defs
+			    .append("marker")    // This section adds in the arrows
+			    .attr("id", "arrow-head")
+			    .attr("viewBox", "0 -5 10 10")
+			    .attr("refX", 0)
+			    .attr("refY", 0)
+			    .attr("markerWidth", 5)
+			    .attr("markerHeight", 3)
+			    .attr("orient", "auto")
+			    .append("path")
+			    .attr("d", "M0,-5L10,0L0,5")
+			    .attr("fill","#808080");
+
+
+
 		greatesthits = greatesthits.filter(function(d) { 
-										if (!isNaN(d.sentiment_score)) {
+						if (!isNaN(d.sentiment_score)) {
+							return d; 
+						}
+						else {
+							//console.log("getting here")
+						}
+						if (!isNaN(d.retweet_count)) {
+
+							return d; 
+						}
+						else {
+							//console.log("getting here")
+						}
+						if (d == null) {
+							console.log("getting hereNULLLL")
+						}
+					})
+
+		sentimentScale.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
+		retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
+		beeSize.domain(retweetextent)
 
 
-											return d; 
-										}
-										else {
-											//console.log("getting here")
-										}
-										if (!isNaN(d.retweet_count)) {
+		setupVis(greatesthits);
+		setupSections();
 
-											return d; 
-										}
-										else {
-											//console.log("getting here")
-										}
-										if (d == null) {
-											console.log("getting hereNULLLL")
-										}
-									})
-
-	sentimentScale
-						.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
-							//.range([bsmargin.left, bswidth-bsmargin.right])
-	
-
-
-	retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
-	beeSize 
-			.domain(retweetextent)
-
-	setupVis(greatesthits);
-	setupSections();
-
-	});
-	   }
+		});
+	}
 
 	var setupVis = function(greatesthits) {
 
@@ -92,6 +108,10 @@ worker.onmessage = function(event) {
    return ended(event.data);
   }
 };*/
+
+	 var chartAnnotation = bssvg.append("g")
+             //.attr("transform", "translate(" + bsmargin.left + "," + bsmargin.top + ")")
+             .attr("class","swarm-annotation");
 
 	var simulation = d3.forceSimulation(greatesthits)
       .force("x", d3.forceX(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
@@ -126,17 +146,94 @@ worker.onmessage = function(event) {
       /*var cell = bssvg.append("g")
       .attr("class", "cells")
     .selectAll("g").data(greatesthits).enter().append('g')*/
-
+     chartAnnotation.append("line")
+        	.attr("class", "dividing-line")
+        	.attr("x1",0)
+          	.attr("x2",bswidth)
+          	.attr("y1",bsheight/2)
+          	.attr("y2",bsheight/2)
 	  cell.append("circle")
 	     .attr("class", "cellcircle")
 	      .attr("r", function(d) {  return beeSize(d.data.retweet_count); })
 	      .attr("cx", function(d) { return d.data.x; })
 	      .attr("cy", function(d) { return d.data.y; })
 	      .attr("fill", function(d) { return colorScale(d.data.sentiment_score)})
+	      .attr("opacity", 0)
 	    
 
 	   cell.append("path")
       .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+
+      
+        chartAnnotation.append("line")
+          	.attr("x1",bswidth-240)
+          	.attr("x2",bswidth-60)
+          	.attr("y1",bsheight-35)
+          	.attr("y2",bsheight-35)
+          	.attr("class","annotation-line")
+          	.attr("marker-end", function(d){
+            	return "url(#arrow-head)"
+         	});
+
+        chartAnnotation.append("text")
+            .attr("x",bswidth-60)
+            .attr("y",bsheight-50)
+            .attr("class","annnotation-text")
+            .text(function(d){
+            	return "More Positive Sentiment"
+            }).attr("text-anchor", "start");
+
+         chartAnnotation.append("line")
+          	.attr("x1",200)
+          	.attr("x2",20)
+          	.attr("y1",40)
+          	.attr("y2",40)
+          	.attr("class","annotation-line")
+          	.attr("marker-end", function(d){
+            	return "url(#arrow-head)"
+         	});
+
+        chartAnnotation.append("text")
+            .attr("x",200)
+            .attr("y",25)
+            .attr("class","annnotation-text")
+            .text(function(d){
+            	return "More Negative Sentiment"
+            }).attr("text-anchor", "end");
+
+
+        average = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
+        console.log(average);
+        
+        averageAnnotation = bssvg.append('g')
+        				.attr("class", "average-annotation")
+        avg = averageAnnotation.selectAll("g")
+        	.data([average])
+        	.enter()
+        avg.append("line")
+        	.attr("x1",function(d) { return sentimentScale(d)})
+          	.attr("x2",function(d) { return sentimentScale(d)})
+          	.attr("y1",bsmargin.top)
+          	.attr("y2",bsheight-bsmargin.bottom)
+          	.attr("class", "average-line")
+
+        avg.append('text')
+        	.attr("x",function(d) { return sentimentScale(d)})
+          	.attr("y",30)
+          	.text("average")
+          	.attr("class", "average-text-label")
+          	.attr("text-anchor", "middle")
+
+
+
+       
+
+
+
+
+
+
+
 
 
 
@@ -201,18 +298,22 @@ worker.onmessage = function(event) {
 
 	}
 	 var setupSections = function () {
-    // activateFunctions are called each
-    // time the active section changes
-   activateFunctions[0] = showBeeswarm;
-activateFunctions[1] = showAndroid;
-activateFunctions[2] = showIphone;
-activateFunctions[3] = showObama;
-activateFunctions[4] = showClinton;
-activateFunctions[5] = showCnn;
-activateFunctions[6] = transitionScatterTimeOfDay;
-activateFunctions[7] = scatterTimeline;
+		    // activateFunctions are called each
+		    // time the active section changes
+		activateFunctions[0] = showAnno;
+		activateFunctions[1] = showBeeswarm;
+		activateFunctions[2] = showBeforePhoneSwitch;
+ 		activateFunctions[3] = showAndroid;
+		activateFunctions[4] = showIphone;
+		activateFunctions[5] = showObama;
+		activateFunctions[6] = showClinton;
+		activateFunctions[7] = showCnn;
+		activateFunctions[8] = transitionScatterTimeOfDay;
+		activateFunctions[9] = scatterTimeline;
+		
 
-    // updateFunctions are called while
+
+    // updateFunctions are called whilec
     // in a particular section to update
     // the scroll progress in that section.
     // Most sections do not need to be updated
@@ -221,13 +322,111 @@ activateFunctions[7] = scatterTimeline;
     for (var i = 0; i < 9; i++) {
       updateFunctions[i] = function () {};
     }
-    updateFunctions[7] = updateCough;
+    //updateFunctions[7] = updateCough;
   };
+
+  function showAnno() {
+
+  }
+  function showBeeswarm() {
+
+  	bssvg.selectAll(".cellcircle")
+  		.transition()
+  		.duration(500)
+  		.attr("opacity", 1)
+
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+
+  }
+
+  function showBeforePhoneSwitch() {
+  	oldtweetsonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01')})
+  	console.log(oldtweetsonly.length)
+  }
+  function showAndroid() {
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+  	console.log("getting called");
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['source'] == 'Twitter for Android'})
+  		.classed("selected", true)
+  		
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['source'] != 'Twitter for Android'})
+  		.classed("unselected", true)
+
+  	androidonly = greatesthits.filter(function(d) { return d['source'] == 'Twitter for Android'; })
+    average = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
+
+        console.log(average);
+        
+      
+        avg = averageAnnotation.selectAll("g")
+        	.data([average])
+        	.enter()
+
+        console.log(avg)
+        avg.select(".average-line")
+       		.transition()
+       		.duration(500)
+        	.attr("x1",function(d) { console.log(d); return sentimentScale(d)})
+          	.attr("x2",function(d) { return sentimentScale(d)})
+
+          
+
+        avg.select("average-text-label")
+        	.transition()
+        	.duration(500)
+        	.attr("x",function(d) { return sentimentScale(d)})
+     
+  }
+  function showIphone() {
+  		bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['source'] == 'Twitter for iPhone'})
+  		.classed("selected", true)
+
+  		
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['source'] != 'Twitter for iPhone'})
+  		.classed("unselected", true)
+  }
+  function showObama() {
+  }
+  function showClinton() {
+  }
+  function showCnn() {
+  }
+  function transitionScatterTimeOfDay() {
+  }
+  function scatterTimeline() {
+  }
+  function buildAverage() {
+   	
+   }
 	  /**
+  }
+  }
+  }
+  }
+  }
+  }
+  }
+  }
    * activate -
    *
    * @param index - index of the activated section
    */
+
   chart.activate = function (index) {
     activeIndex = index;
     var sign = (activeIndex - lastIndex) < 0 ? -1 : 1;
@@ -297,12 +496,14 @@ function display(error,greatesthits) {
 
 
 function type(d) {
-
+var parseDate = d3.timeParse("%Y-%m-%d")
   d.sentiment_score = +d.sentiment_score;
   d.favorite_count = +d.favorite_count;
   d.retweet_count = +d.retweet_count;
-  d.date_created = d.date_created.slice(0,10)
+
+  d.date_created = parseDate(d.date_created.slice(0,10))
   d.time_created = d.time_created.slice(11,19)
+
 
 
   return d;
