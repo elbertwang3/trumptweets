@@ -184,6 +184,7 @@ worker.onmessage = function(event) {
 		.attr("r", function(d) {  return beeSize(d.data.retweet_count); }) 
 
 	cell.append("path")
+	  .attr('class', 'voronoi')
       .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
 
  
@@ -360,7 +361,7 @@ worker.onmessage = function(event) {
 
   	bssvg.selectAll(".cellcircle")
   		.transition()
-  		.duration(500)
+  		.duration(1500)
   		.attr("opacity", 1)
 
   	bssvg.selectAll(".cellcircle")
@@ -368,114 +369,72 @@ worker.onmessage = function(event) {
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
 
+  	mean = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
+  	buildAverage(mean);
+
   }
 
   function showBeforePhoneSwitch() {
-  	oldtweetsonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01')})
-  	console.log(oldtweetsonly)
-  	//
-  	cell = cells
-    .selectAll("g").data(voronoi
-      .polygons(oldtweetsonly))
 
-    console.log(cell);
+  	
 
-   	cell
-   		.exit()
-   		/*.transition()
-   		.duration()
-   		.attr("opacity", 0)*/
-   		.remove()
-  	simulation.nodes(oldtweetsonly)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01')})
+  		.classed("selected", true)
+  		
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-05-01')})
+  		.classed("unselected", true)  
 
-   
-      
-
-
-  
-
-    
-//function ended(data) {	
-
-    
-	   	//d3.selectAll(".cellCircle")
-
-
-      
-   	cell.select('circle')
-   		.transition()
-   		.duration(2000)
-     	.attr("cx", function(d) { return d.data.x; })
-      	.attr("cy", function(d) { return d.data.y; })
-      	.attr("fill", function(d) { return colorScale(d.data.sentiment_score)})
-	    
-
-
-	    
-
-	cell.select("path")
-      .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+  	oldtweets = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01'); })
+  	oldmean = d3.mean(oldtweets, function(d) { return d['sentiment_score'];})
+  	buildAverage(oldmean);
   }
   function showAndroid() {
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
-  	console.log("getting called");
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['source'] == 'Twitter for Android'})
+  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01') && d.data['source'] == 'Twitter for Android'})
   		.classed("selected", true)
   		
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['source'] != 'Twitter for Android'})
+  		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-05-01') || d.data['source'] != 'Twitter for Android'})
   		.classed("unselected", true)
 
-  	androidonly = greatesthits.filter(function(d) { return d['source'] == 'Twitter for Android'; })
-  	alltweetsaverage = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
-  	console.log(alltweetsaverage)
+ 
 
-  	oldtweetsonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01')})
+ 
 
-  	androidonly = oldtweetsonly.filter(function(d) { return d['source'] == 'Twitter for Android'; })
-    oldtweetsaverage = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
-
-        console.log(oldtweetsaverage);
-
-        
-      
-        avg = averageAnnotation.selectAll("g")
-        	.data([average])
-        	.enter()
-
-        console.log(avg)
-        avg.select(".average-line")
-       		.transition()
-       		.duration(500)
-        	.attr("x1",function(d) { console.log(d); return sentimentScale(d)})
-          	.attr("x2",function(d) { return sentimentScale(d)})
-
-          
-
-        avg.select("average-text-label")
-        	.transition()
-        	.duration(500)
-        	.attr("x",function(d) { return sentimentScale(d)})
+   	androidonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01') && d['source'] == 'Twitter for Android' })
+  	androidmean = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
+  	buildAverage(androidmean);
+   
      
   }
   function showIphone() {
-  		bssvg.selectAll(".cellcircle")
+  	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
 
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['source'] == 'Twitter for iPhone'})
+  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01') && d.data['source'] == 'Twitter for iPhone'})
   		.classed("selected", true)
 
   		
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['source'] != 'Twitter for iPhone'})
+  		.filter(function(d) { return  d.data['date_created'] >= parseDate('2017-05-01') || d.data['source'] != 'Twitter for iPhone'})
   		.classed("unselected", true)
+
+  	iphoneonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01') && d['source'] == 'Twitter for iPhone' })
+  	iphonemean = d3.mean(iphoneonly, function(d) { return d['sentiment_score'];})
+  	buildAverage(iphonemean);
   }
   function showObama() {
   	bssvg.selectAll(".cellcircle")
@@ -492,6 +451,10 @@ worker.onmessage = function(event) {
   		.filter(function(d) { return d.data['text'].indexOf('Obama') == -1; })
   		.classed("unselected", true)
 
+  	obamaonly = greatesthits.filter(function(d) {  return d['text'].indexOf('Obama') !== -1; })
+  	obamamean = d3.mean(obamaonly, function(d) { return d['sentiment_score'];})
+  	buildAverage(obamamean);
+
 
   }
   function showClinton() {
@@ -500,22 +463,62 @@ worker.onmessage = function(event) {
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['text'].indexOf('Hillary') !== -1; })
+  		.filter(function(d) { return d.data['text'].toLowerCase().indexOf('hillary') !== -1 || d.data['text'].indexOf('clinton') !== -1 })
   		.classed("selected", true)
 
   		
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['text'].indexOf('Hillary') == -1; })
+  		.filter(function(d) { return d.data['text'].toLowerCase().indexOf('hillary') == -1 && d.data['text'].indexOf('clinton') == -1 })
   		.classed("unselected", true)
+
+  	clintononly = greatesthits.filter(function(d) { return d['text'].toLowerCase().indexOf('hillary') !== -1 || d['text'].indexOf('clinton') !== -1 })
+  	clintonmean = d3.mean(clintononly, function(d) { return d['sentiment_score'];})
+  	buildAverage(clintonmean);
 
   }
   function showCnn() {
+  	console.log("cnn shown")
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['text'].toLowerCase().indexOf('cnn') !== -1 || d.data['text'].indexOf('nytimes') !== -1 || d.data['text'].indexOf('news') !== -1 || d.data['text'].indexOf('media') !== -1  })
+  		.classed("selected", true)
+
+  		
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['text'].toLowerCase().indexOf('cnn') == -1 && d.data['text'].indexOf('nytimes') == -1 && d.data['text'].indexOf('news') == -1 && d.data['text'].indexOf('media') == -1  })
+  		.classed("unselected", true)
+
+  	mediaonly = greatesthits.filter(function(d) { return d['text'].toLowerCase().indexOf('cnn') !== -1 || d['text'].indexOf('nytimes') !== -1 || d['text'].indexOf('news') !== -1 || d['text'].indexOf('media') !== -1  })
+  	mediamean = d3.mean(mediaonly, function(d) { return d['sentiment_score'];})
+  	buildAverage(mediamean);
   }
   function transitionScatterTimeOfDay() {
   }
   function scatterTimeline() {
   }
-  function buildAverage() {
+  function buildAverage(average) {
+  		console.log(average);
+        avg = averageAnnotation.selectAll("g")
+        	.data([average])
+        	.enter()
+
+        console.log(avg)
+        avg.select(".average-line")
+       		.transition()
+       		.duration(500)
+        	.attr("x1",function(d) { return sentimentScale(d)})
+          	.attr("x2",function(d) { return sentimentScale(d)})
+      
+
+          
+
+        avg.select(".average-text-label")
+        	.transition()
+        	.duration(500)
+        	.attr("x",function(d) { return sentimentScale(d)})
    	
    }
 	  /**
