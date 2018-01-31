@@ -1,9 +1,6 @@
   var vis = document.getElementById("vis")
-  console.log(vis);
   var visstyle = vis.style;
-  console.log(vis.getBoundingClientRect)
   var topoffset = vis.getBoundingClientRect().top
-  console.log(topoffset);
   
 
   $(window).scroll(function() {

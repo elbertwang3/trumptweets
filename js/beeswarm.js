@@ -39,6 +39,11 @@ var scrollVis = function(greatesthits) {
 
 	var activateFunctions = [];
 	var updateFunctions = [];
+	var simulation;
+	var cells;
+	var cell;
+	var cellCircle;
+	var voronoi;
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
@@ -69,14 +74,14 @@ var scrollVis = function(greatesthits) {
 							return d; 
 						}
 						else {
-							//console.log("getting here")
 						}
 						if (!isNaN(d.retweet_count)) {
 
 							return d; 
 						}
 						else {
-							//console.log("getting here")
+							console.log("getting here")
+							console.log(d);
 						}
 						if (d == null) {
 							console.log("getting hereNULLLL")
@@ -113,27 +118,38 @@ worker.onmessage = function(event) {
              //.attr("transform", "translate(" + bsmargin.left + "," + bsmargin.top + ")")
              .attr("class","swarm-annotation");
 
-	var simulation = d3.forceSimulation(greatesthits)
+	simulation = d3.forceSimulation(greatesthits)
+	 //.velocityDecay(0.2)
       .force("x", d3.forceX(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
       .force("y", d3.forceY(bsheight/2))
       //.force("collide", function(d) { return d3.forceCollide(beeSize(d.retweet_count)); })
       .force("collide", d3.forceCollide().radius(function(d) { return beeSize(d.retweet_count) + 1;   }))
-      .stop();
+          //.on('tick', ticked);
+      .stop()
+   
+      
 
-    for (var i = 0; i < 500	; ++i) simulation.tick();
+
+   for (var i = 0; i < 500; ++i) {
+    	console.log("tick")
+    	simulation.tick();
+    }
 //function ended(data) {
 
-    var cell = bssvg.append("g")
-      .attr("class", "cells")
-    .selectAll("g").data(d3.voronoi()
+	voronoi = d3.voronoi()
         .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
         .x(function(d) { return d.x; })
         .y(function(d) { return d.y; })
-      .polygons(greatesthits)).enter().append("g")
+    
+    cells = bssvg.append("g")
+      .attr("class", "cells")
+    cell = cells.selectAll("g").data(voronoi
+      .polygons(greatesthits))
+    	.enter()
+    	.append("g")
     	.attr("class", "cell-g")
     	 .on("mouseenter", function(d) {
 	      	data = d
-
 	      	mouseOverEvents(data,d3.select(this));
 
 	      })
@@ -142,6 +158,7 @@ worker.onmessage = function(event) {
 	      	mouseOutEvents(data,d3.select(this));
 	      });
       
+      console.log(cell);
 
       /*var cell = bssvg.append("g")
       .attr("class", "cells")
@@ -152,17 +169,24 @@ worker.onmessage = function(event) {
           	.attr("x2",bswidth)
           	.attr("y1",bsheight/2)
           	.attr("y2",bsheight/2)
-	  cell.append("circle")
+	cellCircle = cell.append("circle")
 	     .attr("class", "cellcircle")
-	      .attr("r", function(d) {  return beeSize(d.data.retweet_count); })
-	      .attr("cx", function(d) { return d.data.x; })
+	       .attr('r', 0)
+	      //.attr("r", function(d) {  return beeSize(d.data.retweet_count); })
+	      .attr("cx", function(d) {  return d.data.x; })
 	      .attr("cy", function(d) { return d.data.y; })
 	      .attr("fill", function(d) { return colorScale(d.data.sentiment_score)})
 	      .attr("opacity", 0)
-	    
+	
+	cellCircle.transition()
+		.delay(1000)
+		.duration(1000)
+		.attr("r", function(d) {  return beeSize(d.data.retweet_count); }) 
 
-	   cell.append("path")
+	cell.append("path")
       .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+
+ 
 
       
         chartAnnotation.append("line")
@@ -227,7 +251,11 @@ worker.onmessage = function(event) {
 
 
        
-
+        function ticked() {
+        	cellCircle
+        	.attr("cx", function(d) {  return d.data.x; })
+	      	.attr("cy", function(d) { return d.data.y; })
+        }
 
 
 
@@ -344,7 +372,49 @@ worker.onmessage = function(event) {
 
   function showBeforePhoneSwitch() {
   	oldtweetsonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01')})
-  	console.log(oldtweetsonly.length)
+  	console.log(oldtweetsonly)
+  	//
+  	cell = cells
+    .selectAll("g").data(voronoi
+      .polygons(oldtweetsonly))
+
+    console.log(cell);
+
+   	cell
+   		.exit()
+   		/*.transition()
+   		.duration()
+   		.attr("opacity", 0)*/
+   		.remove()
+  	simulation.nodes(oldtweetsonly)
+
+   
+      
+
+
+  
+
+    
+//function ended(data) {	
+
+    
+	   	//d3.selectAll(".cellCircle")
+
+
+      
+   	cell.select('circle')
+   		.transition()
+   		.duration(2000)
+     	.attr("cx", function(d) { return d.data.x; })
+      	.attr("cy", function(d) { return d.data.y; })
+      	.attr("fill", function(d) { return colorScale(d.data.sentiment_score)})
+	    
+
+
+	    
+
+	cell.select("path")
+      .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
   }
   function showAndroid() {
   	bssvg.selectAll(".cellcircle")
@@ -361,9 +431,16 @@ worker.onmessage = function(event) {
   		.classed("unselected", true)
 
   	androidonly = greatesthits.filter(function(d) { return d['source'] == 'Twitter for Android'; })
-    average = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
+  	alltweetsaverage = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
+  	console.log(alltweetsaverage)
 
-        console.log(average);
+  	oldtweetsonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01')})
+
+  	androidonly = oldtweetsonly.filter(function(d) { return d['source'] == 'Twitter for Android'; })
+    oldtweetsaverage = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
+
+        console.log(oldtweetsaverage);
+
         
       
         avg = averageAnnotation.selectAll("g")
@@ -401,8 +478,36 @@ worker.onmessage = function(event) {
   		.classed("unselected", true)
   }
   function showObama() {
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['text'].indexOf('Obama') !== -1; })
+  		.classed("selected", true)
+
+  		
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['text'].indexOf('Obama') == -1; })
+  		.classed("unselected", true)
+
+
   }
   function showClinton() {
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['text'].indexOf('Hillary') !== -1; })
+  		.classed("selected", true)
+
+  		
+  	bssvg.selectAll(".cellcircle")
+  		.filter(function(d) { return d.data['text'].indexOf('Hillary') == -1; })
+  		.classed("unselected", true)
+
   }
   function showCnn() {
   }
