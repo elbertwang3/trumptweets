@@ -193,13 +193,15 @@ body {
 
 .is_fixed {
 	position: fixed;
-top: 115;
+/*top: 115;*/
+	top: 0;
 
 }
 
 .is_unfixed {
 	position: absolute;
-	top: 200;
+	/*top: 200;*/
+	top: 0;
 
 }
 

@@ -5,16 +5,28 @@ var scrollVis = function(greatesthits) {
 	beeswarmdiv = d3.select('.beeswarm')
 	bsmargin = {top: 40, right: 40, bottom: 40, left: 40},
     bswidth = 1000,
-    bsheight = 350
+    bsheight = window.innerHeight,
+    scatterwidth = 1000,
+    scatterheight = window.innerHeight
     var lastIndex = -1;
   	var activeIndex = 0;
-
-
+  	console.log(window.innerWidth);
+  	console.log(window.innerHeight);
+  	var parseDate = d3.timeParse("%Y-%m-%d")
+	var parseTime = d3.timeParse("%H:%M:%S")
   	var sentimentScale = d3.scaleLinear()
 							//.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
 							.range([bsmargin.left, bswidth-bsmargin.right])
 	var colorScale = d3.scaleLinear()
 		.domain([14,0,-13]).range(["#003366","#ffffff","#8b0000"]);
+
+
+	var timeofdayScale = d3.scaleTime()
+					//.domain([d3.extent(greatesthits, function(d) { return parseTime(['time_created']); })])
+					.range([scatterheight - bsmargin.bottom, bsmargin.top])
+	var dateScale = d3.scaleTime()
+					//.domain([d3.extent(greatesthits, function(d) { return d['date_created']; })])
+					.range([scatterheight - bsmargin.bottom, bsmargin.top])
 
 
 	//retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
@@ -29,7 +41,7 @@ var scrollVis = function(greatesthits) {
 	      tooltip.style("visibility",null);
 	    });
 
-	var parseDate = d3.timeParse("%Y-%m-%d")
+
 
 
 
@@ -44,6 +56,7 @@ var scrollVis = function(greatesthits) {
 	var cell;
 	var cellCircle;
 	var voronoi;
+	var bssvg;
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
@@ -77,7 +90,7 @@ var scrollVis = function(greatesthits) {
 						}
 						if (!isNaN(d.retweet_count)) {
 
-							return d; 
+							return d;  
 						}
 						else {
 							console.log("getting here")
@@ -91,6 +104,11 @@ var scrollVis = function(greatesthits) {
 		sentimentScale.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
 		retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
 		beeSize.domain(retweetextent)
+		
+		timeofdayScale
+					.domain([parseTime("00:00:00"), parseTime("23:59:59")])
+		dateScale
+					.domain([d3.extent(greatesthits, function(d) { return d['date_created']; })])
 
 
 		setupVis(greatesthits);
@@ -337,8 +355,9 @@ worker.onmessage = function(event) {
 		activateFunctions[5] = showObama;
 		activateFunctions[6] = showClinton;
 		activateFunctions[7] = showCnn;
-		activateFunctions[8] = transitionScatterTimeOfDay;
-		activateFunctions[9] = scatterTimeline;
+		activateFunctions[8] = searchTerm;
+		activateFunctions[9] = transitionScatterTimeOfDay;
+		activateFunctions[10] = scatterTimeline;
 		
 
 
@@ -495,7 +514,28 @@ worker.onmessage = function(event) {
   	mediamean = d3.mean(mediaonly, function(d) { return d['sentiment_score'];})
   	buildAverage(mediamean);
   }
+  function searchTerm() {
+  	bssvg.selectAll(".cellcircle")
+  		.classed("unselected", false)
+  	bssvg.selectAll(".cellcircle")
+  		.classed("selected", false)
+
+  }
   function transitionScatterTimeOfDay() {
+
+  		bssvg
+          //.attr("viewBox", "0 0 " +  (width+margin.left+margin.top) + " " + (height+margin.top+margin.bottom))
+          .transition()
+          .duration(1000)
+          .attr("width", scatterwidth)
+          .attr("height", scatterheight)
+
+        bssvg.selectAll(".cellcircle")
+        	.transition()
+        	.duration(1000)
+        	.attr("cx", function(d) { return sentimentScale(d.data['sentiment_score']) })
+        	.attr("cy", function(d) { console.log(parseTime(d.data['time_created'])); return timeofdayScale(parseTime(d.data['time_created'])) })
+
   }
   function scatterTimeline() {
   }
