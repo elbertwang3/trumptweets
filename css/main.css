@@ -212,9 +212,7 @@ body {
 
 
 .annnotation-text {
-    text-anchor: end;
-    -webkit-transform: translateX(-10px);
-    transform: translateX(-10px);
+    text-anchor: middle;
     dominant-baseline: middle;
     font-family: 'Roboto';
     font-weight: 500;
@@ -227,8 +225,8 @@ body {
 .dividing-line {
 	stroke: #d3d3d3;
 	stroke-width: 2px;
-}
 
+}
 .average-text-label {
 	 font-size: 10px;
 	  pointer-events: none;
@@ -252,7 +250,7 @@ body {
 	opacity: 0.1;
 }
 
-/*.voronoi {
+.voronoi {
       stroke: black;
       fill: none;
-    }*/
+    }

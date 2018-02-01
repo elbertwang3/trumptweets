@@ -80,7 +80,6 @@ function scroller() {
       }
       sectionPositions.push(top - startPos);
     });
-    console.log(sectionPositions)
     containerStart = container.node().getBoundingClientRect().top + window.pageYOffset;
   }
 

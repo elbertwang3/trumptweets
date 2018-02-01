@@ -1,32 +1,29 @@
 
 var scrollVis = function(greatesthits) {
-	console.log("getting here");
-	//console.log(greatesthits)
 	beeswarmdiv = d3.select('.beeswarm')
-	bsmargin = {top: 40, right: 40, bottom: 40, left: 40},
+	bsmargin = {top: 40, right: 40, bottom: 40, left: 65},
     bswidth = 1000,
     bsheight = window.innerHeight,
     scatterwidth = 1000,
     scatterheight = window.innerHeight
     var lastIndex = -1;
   	var activeIndex = 0;
-  	console.log(window.innerWidth);
-  	console.log(window.innerHeight);
+
   	var parseDate = d3.timeParse("%Y-%m-%d")
 	var parseTime = d3.timeParse("%H:%M:%S")
   	var sentimentScale = d3.scaleLinear()
 							//.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
-							.range([bsmargin.left, bswidth-bsmargin.right])
+							.range([bsheight - bsmargin.bottom, bsmargin.top])
 	var colorScale = d3.scaleLinear()
 		.domain([14,0,-13]).range(["#003366","#ffffff","#8b0000"]);
 
 
 	var timeofdayScale = d3.scaleTime()
 					//.domain([d3.extent(greatesthits, function(d) { return parseTime(['time_created']); })])
-					.range([scatterheight - bsmargin.bottom, bsmargin.top])
+					.range([bsmargin.left, scatterwidth - bsmargin.right])
 	var dateScale = d3.scaleTime()
 					//.domain([d3.extent(greatesthits, function(d) { return d['date_created']; })])
-					.range([scatterheight - bsmargin.bottom, bsmargin.top])
+					.range([bsmargin.left, scatterwidth - bsmargin.right])
 
 
 	//retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
@@ -54,6 +51,7 @@ var scrollVis = function(greatesthits) {
 	var simulation;
 	var cells;
 	var cell;
+  var cellg;
 	var cellCircle;
 	var voronoi;
 	var bssvg;
@@ -138,8 +136,10 @@ worker.onmessage = function(event) {
 
 	simulation = d3.forceSimulation(greatesthits)
 	 //.velocityDecay(0.2)
-      .force("x", d3.forceX(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
-      .force("y", d3.forceY(bsheight/2))
+      //.force("x", d3.forceX(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
+      //.force("y", d3.forceY(bsheight/2))
+      .force("x", d3.forceX(bswidth/2))
+      .force("y", d3.forceY(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
       //.force("collide", function(d) { return d3.forceCollide(beeSize(d.retweet_count)); })
       .force("collide", d3.forceCollide().radius(function(d) { return beeSize(d.retweet_count) + 1;   }))
           //.on('tick', ticked);
@@ -161,8 +161,10 @@ worker.onmessage = function(event) {
     
     cells = bssvg.append("g")
       .attr("class", "cells")
-    cell = cells.selectAll("g").data(voronoi
+    cellg = cells.selectAll("g").data(voronoi
       .polygons(greatesthits))
+
+    cell = cellg
     	.enter()
     	.append("g")
     	.attr("class", "cell-g")
@@ -176,30 +178,32 @@ worker.onmessage = function(event) {
 	      	mouseOutEvents(data,d3.select(this));
 	      });
       
-      console.log(cell);
 
       /*var cell = bssvg.append("g")
       .attr("class", "cells")
     .selectAll("g").data(greatesthits).enter().append('g')*/
      chartAnnotation.append("line")
         	.attr("class", "dividing-line")
-        	.attr("x1",0)
-          	.attr("x2",bswidth)
-          	.attr("y1",bsheight/2)
-          	.attr("y2",bsheight/2)
+        	.attr("x1",bswidth/2)
+          	.attr("x2",bswidth/2)
+          	.attr("y1",bsmargin.top)
+          	.attr("y2",bsheight-bsmargin.bottom)
+        chartAnnotation.append("line")
+          .attr("class", "dividing-line")
+          .attr("x1",bsmargin.left)
+            .attr("x2",bswidth-bsmargin.right)
+            .attr("y1",sentimentScale(0))
+            .attr("y2",sentimentScale(0))
 	cellCircle = cell.append("circle")
 	     .attr("class", "cellcircle")
-	       .attr('r', 0)
-	      //.attr("r", function(d) {  return beeSize(d.data.retweet_count); })
+	       //.attr('r', 0)
+	      .attr("r", function(d) {  return beeSize(d.data.retweet_count); })
 	      .attr("cx", function(d) {  return d.data.x; })
 	      .attr("cy", function(d) { return d.data.y; })
 	      .attr("fill", function(d) { return colorScale(d.data.sentiment_score)})
 	      .attr("opacity", 0)
 	
-	cellCircle.transition()
-		.delay(1000)
-		.duration(1000)
-		.attr("r", function(d) {  return beeSize(d.data.retweet_count); }) 
+	
 
 	cell.append("path")
 	  .attr('class', 'voronoi')
@@ -209,40 +213,51 @@ worker.onmessage = function(event) {
 
       
         chartAnnotation.append("line")
-          	.attr("x1",bswidth-240)
-          	.attr("x2",bswidth-60)
-          	.attr("y1",bsheight-35)
-          	.attr("y2",bsheight-35)
+          	.attr("x1",bsmargin.left-25)
+          	.attr("x2",bsmargin.left-25)
+          	.attr("y1",bsmargin.top+220)
+          	.attr("y2",bsmargin.top+40)
           	.attr("class","annotation-line")
           	.attr("marker-end", function(d){
             	return "url(#arrow-head)"
          	});
 
         chartAnnotation.append("text")
-            .attr("x",bswidth-60)
-            .attr("y",bsheight-50)
+            //.attr("x",100)
+            //.attr("y",bsmargin.top)
             .attr("class","annnotation-text")
             .text(function(d){
             	return "More Positive Sentiment"
-            }).attr("text-anchor", "start");
+            })
+            .attr("dy", "1em")
+            .attr("transform", "translate(" +(bsmargin.left-25) + ", "+ (bsmargin.top-28)+")")
+            .call(wrap,60)
 
          chartAnnotation.append("line")
-          	.attr("x1",200)
-          	.attr("x2",20)
-          	.attr("y1",40)
-          	.attr("y2",40)
+          	.attr("x1",bsmargin.left-25)
+          	.attr("x2",bsmargin.left-25)
+          	.attr("y1",bsheight - bsmargin.bottom - 220)
+          	.attr("y2",bsheight - bsmargin.bottom - 40)
           	.attr("class","annotation-line")
           	.attr("marker-end", function(d){
             	return "url(#arrow-head)"
          	});
 
         chartAnnotation.append("text")
-            .attr("x",200)
-            .attr("y",25)
+            //.attr("x",100)
+            //.attr("y",bsheight - bsmargin.bottom)
             .attr("class","annnotation-text")
             .text(function(d){
             	return "More Negative Sentiment"
-            }).attr("text-anchor", "end");
+            })
+             .attr("transform", "translate("+(bsmargin.left-25) + ", " + (bsheight-bsmargin.bottom-25)+")")
+            .attr("dy", "1em")
+            .call(wrap,60)
+
+     
+
+            
+
 
 
         average = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
@@ -254,18 +269,22 @@ worker.onmessage = function(event) {
         	.data([average])
         	.enter()
         avg.append("line")
-        	.attr("x1",function(d) { return sentimentScale(d)})
+        	/*.attr("x1",function(d) { return sentimentScale(d)})
           	.attr("x2",function(d) { return sentimentScale(d)})
           	.attr("y1",bsmargin.top)
-          	.attr("y2",bsheight-bsmargin.bottom)
+          	.attr("y2",bsheight-bsmargin.bottom)*/
+            .attr("x1",bswidth/4)
+            .attr("x2",3*bswidth/4)
+            .attr("y1",function(d) { return sentimentScale(d)})
+            .attr("y2",function(d) { return sentimentScale(d)})
           	.attr("class", "average-line")
 
         avg.append('text')
-        	.attr("x",function(d) { return sentimentScale(d)})
-          	.attr("y",30)
+        	.attr("x",bswidth/4-50)
+          	.attr("y",function(d) { return sentimentScale(d)})
           	.text("average")
           	.attr("class", "average-text-label")
-          	.attr("text-anchor", "middle")
+          	.attr("alignment-baseline", "middle")
 
 
 
@@ -299,8 +318,13 @@ worker.onmessage = function(event) {
     									//.attr("tweetID", function(d) { return data.id_str; })
 
     	var tweet =  d3.select("#tweet").node()
+      var id;
+    	if (data.data !== 'undefined') {
+        id = data.data.id_str;
+      } else {
+        id = data.id_str;
+      }
 
-    	var id = data.data.id_str;
     	 twttr.widgets.createTweet(id, tweet, 
 		      {
 		        conversation : 'none',    // or all
@@ -367,7 +391,7 @@ worker.onmessage = function(event) {
     // Most sections do not need to be updated
     // for all scrolling and so are set to
     // no-op functions.
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < 12; i++) {
       updateFunctions[i] = function () {};
     }
     //updateFunctions[7] = updateCough;
@@ -377,6 +401,10 @@ worker.onmessage = function(event) {
 
   }
   function showBeeswarm() {
+
+    cellCircle.transition()
+    .duration(1000)
+    .attr("r", function(d) {  return beeSize(d.data.retweet_count); }) 
 
   	bssvg.selectAll(".cellcircle")
   		.transition()
@@ -522,6 +550,34 @@ worker.onmessage = function(event) {
 
   }
   function transitionScatterTimeOfDay() {
+    console.log(greatesthits);
+  	
+    var voronoi = d3.voronoi()
+        .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
+     .x(function(d) {  return timeofdayScale(parseTime(d['time_created'])) })
+    .y(function(d) { return sentimentScale(d['sentiment_score']) })
+    console.log(cells);
+	   cellg = cells.selectAll("g").data(voronoi
+      .polygons(greatesthits))
+
+     console.log(cellg);
+    cellg.select("path").transition()
+    .duration(1000)
+    .attr("d", function(d, i) { return d ? "M" + d.join("L") + "Z" : null; })
+    	//.enter()
+    	/*.append("g")
+    	.attr("class", "cell-g")
+    	 .on("mouseenter", function(d) {
+	      	data = d
+	      	mouseOverEvents(data,d3.select(this));
+
+	      })
+	      .on("mouseleave", function(d) { 
+	      	data = d
+	      	mouseOutEvents(data,d3.select(this));
+	      });*/
+
+  	
 
   		bssvg
           //.attr("viewBox", "0 0 " +  (width+margin.left+margin.top) + " " + (height+margin.top+margin.bottom))
@@ -533,24 +589,35 @@ worker.onmessage = function(event) {
         bssvg.selectAll(".cellcircle")
         	.transition()
         	.duration(1000)
-        	.attr("cx", function(d) { return sentimentScale(d.data['sentiment_score']) })
-        	.attr("cy", function(d) { console.log(parseTime(d.data['time_created'])); return timeofdayScale(parseTime(d.data['time_created'])) })
+        	
+            .attr("cx", function(d) { return timeofdayScale(parseTime(d.data['time_created'])) })
+          .attr("cy", function(d) { return sentimentScale(d.data['sentiment_score']) })
+
+
+        
+
+
+
+         /*avg.transition()
+            .duration(1000)
+            .attr("opacity", 0)*/
+
+
 
   }
   function scatterTimeline() {
   }
   function buildAverage(average) {
-  		console.log(average);
         avg = averageAnnotation.selectAll("g")
         	.data([average])
         	.enter()
 
-        console.log(avg)
+    
         avg.select(".average-line")
        		.transition()
        		.duration(500)
-        	.attr("x1",function(d) { return sentimentScale(d)})
-          	.attr("x2",function(d) { return sentimentScale(d)})
+        	.attr("y1",function(d) { return sentimentScale(d)})
+          	.attr("y2",function(d) { return sentimentScale(d)})
       
 
           
@@ -558,7 +625,7 @@ worker.onmessage = function(event) {
         avg.select(".average-text-label")
         	.transition()
         	.duration(500)
-        	.attr("x",function(d) { return sentimentScale(d)})
+        	.attr("y",function(d) { return sentimentScale(d)})
    	
    }
 	  /**
@@ -641,7 +708,29 @@ function display(error,greatesthits) {
 
 	
 
-
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
 
 function type(d) {
 var parseDate = d3.timeParse("%Y-%m-%d")
