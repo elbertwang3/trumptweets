@@ -290,6 +290,7 @@ worker.onmessage = function(event) {
 
         xticks = bssvg.append('g')
     .attr("class", "ticks")
+    .attr("opacity", 0)
   xtick = xticks.selectAll('g')
     .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'])
     .enter()
@@ -397,7 +398,9 @@ worker.onmessage = function(event) {
 		activateFunctions[7] = showCnn;
 		activateFunctions[8] = searchTerm;
 		activateFunctions[9] = transitionScatterTimeOfDay;
-		activateFunctions[10] = scatterTimeline;
+    activateFunctions[10] = showAndroid;
+    activateFunctions[11] = showIphone;
+		activateFunctions[12] = scatterTimeline;
 		
 
 
@@ -449,7 +452,7 @@ worker.onmessage = function(event) {
   		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01')})
   		.classed("selected", true)
   		
-  	bssvg.selectAll(".cellcircle")
+  	bssvg.selectAll(".cell-g")
   		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-05-01')})
   		.classed("unselected", true)  
 
@@ -567,7 +570,16 @@ worker.onmessage = function(event) {
   }
   function transitionScatterTimeOfDay() {
     console.log(greatesthits);
-  	
+  	d3.selectAll('.dividing-line')
+      .transition()
+      .duration(1000)
+      .attr("opacity", 0)
+
+    xticks
+      .transition()
+      .duration(1000)
+      .attr("opacity", 1)
+
     var voronoi = d3.voronoi()
         .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
      .x(function(d) {  return timeofdayScale(parseTime(d['time_created'])) })
