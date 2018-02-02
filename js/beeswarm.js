@@ -1,7 +1,7 @@
 
 var scrollVis = function(greatesthits) {
 	beeswarmdiv = d3.select('.beeswarm')
-	bsmargin = {top: 40, right: 40, bottom: 40, left: 65},
+	bsmargin = {top: 40, right: 40, bottom: 50, left: 90},
     bswidth = 1000,
     bsheight = window.innerHeight,
     scatterwidth = 1000,
@@ -11,6 +11,7 @@ var scrollVis = function(greatesthits) {
 
   	var parseDate = d3.timeParse("%Y-%m-%d")
 	var parseTime = d3.timeParse("%H:%M:%S")
+  var parseTime2 = d3.timeParse("%H %p")
   	var sentimentScale = d3.scaleLinear()
 							//.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
 							.range([bsheight - bsmargin.bottom, bsmargin.top])
@@ -213,8 +214,8 @@ worker.onmessage = function(event) {
 
       
         chartAnnotation.append("line")
-          	.attr("x1",bsmargin.left-25)
-          	.attr("x2",bsmargin.left-25)
+          	.attr("x1",bsmargin.left-45)
+          	.attr("x2",bsmargin.left-45)
           	.attr("y1",bsmargin.top+220)
           	.attr("y2",bsmargin.top+40)
           	.attr("class","annotation-line")
@@ -230,12 +231,12 @@ worker.onmessage = function(event) {
             	return "More Positive Sentiment"
             })
             .attr("dy", "1em")
-            .attr("transform", "translate(" +(bsmargin.left-25) + ", "+ (bsmargin.top-28)+")")
+            .attr("transform", "translate(" +(bsmargin.left-45) + ", "+ (bsmargin.top-28)+")")
             .call(wrap,60)
 
          chartAnnotation.append("line")
-          	.attr("x1",bsmargin.left-25)
-          	.attr("x2",bsmargin.left-25)
+          	.attr("x1",bsmargin.left-45)
+          	.attr("x2",bsmargin.left-45)
           	.attr("y1",bsheight - bsmargin.bottom - 220)
           	.attr("y2",bsheight - bsmargin.bottom - 40)
           	.attr("class","annotation-line")
@@ -250,7 +251,7 @@ worker.onmessage = function(event) {
             .text(function(d){
             	return "More Negative Sentiment"
             })
-             .attr("transform", "translate("+(bsmargin.left-25) + ", " + (bsheight-bsmargin.bottom-25)+")")
+             .attr("transform", "translate("+(bsmargin.left-45) + ", " + (bsheight-bsmargin.bottom-25)+")")
             .attr("dy", "1em")
             .call(wrap,60)
 
@@ -287,13 +288,28 @@ worker.onmessage = function(event) {
           	.attr("alignment-baseline", "middle")
 
 
+        xticks = bssvg.append('g')
+    .attr("class", "ticks")
+  xtick = xticks.selectAll('g')
+    .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'])
+    .enter()
+    .append('g')
+    .attr("class", "tick")
 
+    xtick.append("line")
+    .attr("x1", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("x2", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("y2", bsheight - bsmargin.bottom+20)
+    .attr("class", "scatter-axis-line")
+
+  xtick.append("text")
+    .attr("x", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("y", (bsheight-bsmargin.bottom) + 40)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d; })
+    .attr("class", "text-labels")
        
-        function ticked() {
-        	cellCircle
-        	.attr("cx", function(d) {  return d.data.x; })
-	      	.attr("cy", function(d) { return d.data.y; })
-        }
+        
 
 
 
@@ -731,15 +747,26 @@ function wrap(text, width) {
     }
   });
 }
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
+}
 
 function type(d) {
 var parseDate = d3.timeParse("%Y-%m-%d")
   d.sentiment_score = +d.sentiment_score;
   d.favorite_count = +d.favorite_count;
   d.retweet_count = +d.retweet_count;
-
+  var realdate = moment('January 1, 1970 ' + d.time_created.slice(11,19)).add(16, 'h').toDate()
+  var realtime = addZero(realdate.getHours()) + ":" + addZero(realdate.getMinutes()) + ":" + addZero(realdate.getSeconds())
   d.date_created = parseDate(d.date_created.slice(0,10))
-  d.time_created = d.time_created.slice(11,19)
+  d.time_created = realtime;
+
+  //time_created = new Date(d.time_created.slice(11,19).subtract(8, 'h'))
+  //console.log(time_created);
+
 
 
 

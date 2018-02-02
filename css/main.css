@@ -250,7 +250,18 @@ body {
 	opacity: 0.1;
 }
 
-.voronoi {
+/*.voronoi {
       stroke: black;
       fill: none;
-    }
+    }*/
+
+.scatter-axis-line {
+	stroke: rgba(222, 222, 230, 0.9);
+	stroke-width: 1px;
+}
+
+.text-labels {
+	font-family: 'Roboto';
+	font-size: 12px;
+}
+
