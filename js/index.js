@@ -4,10 +4,9 @@
   
 
   $(window).scroll(function() {
+  	console.log(window.pageYOffset)
   	//console.log(window.pageYOffset)
-  	//console.log(window.pageYOffset)
-  	if (window.pageYOffset >= 1723) {
-
+  	if (window.pageYOffset >= 2340) {
 	  	//console.log("GETTING fixed")
 	  	d3.select("#vis").classed("is_fixed", true)
 	  	d3.select("#vis").classed("is_unfixed", false)

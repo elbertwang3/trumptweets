@@ -10,6 +10,7 @@ var scrollVis = function(greatesthits) {
   	var activeIndex = 0;
 
   	var parseDate = d3.timeParse("%Y-%m-%d")
+    var parseDate2 = d3.timeParse("%b %Y")
 	var parseTime = d3.timeParse("%H:%M:%S")
   var parseTime2 = d3.timeParse("%H %p")
   	var sentimentScale = d3.scaleLinear()
@@ -56,10 +57,12 @@ var scrollVis = function(greatesthits) {
 	var cellCircle;
 	var voronoi;
 	var bssvg;
+  var xticks;
+  var xtick;
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
-	    	console.log(rawData);
+	
 	    	greatesthits = rawData;
 			bssvg = beeswarmdiv.append("svg")
 				.attr("width", bswidth)
@@ -92,8 +95,7 @@ var scrollVis = function(greatesthits) {
 							return d;  
 						}
 						else {
-							console.log("getting here")
-							console.log(d);
+		
 						}
 						if (d == null) {
 							console.log("getting hereNULLLL")
@@ -107,7 +109,7 @@ var scrollVis = function(greatesthits) {
 		timeofdayScale
 					.domain([parseTime("00:00:00"), parseTime("23:59:59")])
 		dateScale
-					.domain([d3.extent(greatesthits, function(d) { return d['date_created']; })])
+					.domain(d3.extent(greatesthits, function(d) { return d['date_created']; }))
 
 
 		setupVis(greatesthits);
@@ -274,14 +276,14 @@ worker.onmessage = function(event) {
           	.attr("x2",function(d) { return sentimentScale(d)})
           	.attr("y1",bsmargin.top)
           	.attr("y2",bsheight-bsmargin.bottom)*/
-            .attr("x1",bswidth/4)
-            .attr("x2",3*bswidth/4)
+            .attr("x1",bsmargin.left + 50)
+            .attr("x2",bswidth - bsmargin.right)
             .attr("y1",function(d) { return sentimentScale(d)})
             .attr("y2",function(d) { return sentimentScale(d)})
           	.attr("class", "average-line")
 
         avg.append('text')
-        	.attr("x",bswidth/4-50)
+        	.attr("x",bsmargin.left)
           	.attr("y",function(d) { return sentimentScale(d)})
           	.text("average")
           	.attr("class", "average-text-label")
@@ -410,7 +412,7 @@ worker.onmessage = function(event) {
     // Most sections do not need to be updated
     // for all scrolling and so are set to
     // no-op functions.
-    for (var i = 0; i < 12; i++) {
+    for (var i = 0; i < 20; i++) {
       updateFunctions[i] = function () {};
     }
     //updateFunctions[7] = updateCough;
@@ -452,7 +454,7 @@ worker.onmessage = function(event) {
   		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01')})
   		.classed("selected", true)
   		
-  	bssvg.selectAll(".cell-g")
+  	bssvg.selectAll(".cellcircle")
   		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-05-01')})
   		.classed("unselected", true)  
 
@@ -543,7 +545,7 @@ worker.onmessage = function(event) {
 
   }
   function showCnn() {
-  	console.log("cnn shown")
+ 
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -567,14 +569,78 @@ worker.onmessage = function(event) {
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
 
+    mean = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
+    buildAverage(mean);
+
+
+      if (lastIndex >= 8) {
+
+        simulation = d3.forceSimulation(greatesthits)
+       //.velocityDecay(0.2)
+          //.force("x", d3.forceX(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
+          //.force("y", d3.forceY(bsheight/2))
+          .force("x", d3.forceX(bswidth/2))
+          .force("y", d3.forceY(function(d) { return sentimentScale(d.sentiment_score); }).strength(1))
+          //.force("collide", function(d) { return d3.forceCollide(beeSize(d.retweet_count)); })
+          .force("collide", d3.forceCollide().radius(function(d) { return beeSize(d.retweet_count) + 1;   }))
+              //.on('tick', ticked);
+          .stop()
+       
+          
+
+
+       for (var i = 0; i < 500; ++i) {
+          console.log("tick")
+          simulation.tick();
+        }
+    //function ended(data) {
+
+      voronoi = d3.voronoi()
+            .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+        
+        cellg = cells.selectAll("g").data(voronoi
+          .polygons(greatesthits))
+
+        cellg.select("g")
+          .on("mouseenter", function(d) {
+          data = d
+          mouseOverEvents(data,d3.select(this));
+
+        })
+        .on("mouseleave", function(d) { 
+          data = d
+          mouseOutEvents(data,d3.select(this));
+        });
+
+         cellg.select("path").transition()
+        .duration(1000)
+        .attr("d", function(d, i) { return d ? "M" + d.join("L") + "Z" : null; })
+          
+
+        cellg.select("circle")
+              .transition()
+              .duration(1000)
+              
+                 .attr("cx", function(d) {  return d.data.x; })
+            .attr("cy", function(d) { return d.data.y; })
+      
+
+      cell.append("path")
+        .attr('class', 'voronoi')
+          .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+        }
+
   }
   function transitionScatterTimeOfDay() {
-    console.log(greatesthits);
+
   	d3.selectAll('.dividing-line')
       .transition()
       .duration(1000)
       .attr("opacity", 0)
 
+      xtick 
     xticks
       .transition()
       .duration(1000)
@@ -584,35 +650,23 @@ worker.onmessage = function(event) {
         .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
      .x(function(d) {  return timeofdayScale(parseTime(d['time_created'])) })
     .y(function(d) { return sentimentScale(d['sentiment_score']) })
-    console.log(cells);
-	   cellg = cells.selectAll("g").data(voronoi
+	   
+     cellg = cells.selectAll("g").data(voronoi
       .polygons(greatesthits))
+       .on("mouseenter", function(d) {
+          data = d
+          mouseOverEvents(data,d3.select(this));
 
-     console.log(cellg);
+        })
+        .on("mouseleave", function(d) { 
+          data = d
+          mouseOutEvents(data,d3.select(this));
+        });
     cellg.select("path").transition()
     .duration(1000)
     .attr("d", function(d, i) { return d ? "M" + d.join("L") + "Z" : null; })
-    	//.enter()
-    	/*.append("g")
-    	.attr("class", "cell-g")
-    	 .on("mouseenter", function(d) {
-	      	data = d
-	      	mouseOverEvents(data,d3.select(this));
-
-	      })
-	      .on("mouseleave", function(d) { 
-	      	data = d
-	      	mouseOutEvents(data,d3.select(this));
-	      });*/
-
   	
 
-  		bssvg
-          //.attr("viewBox", "0 0 " +  (width+margin.left+margin.top) + " " + (height+margin.top+margin.bottom))
-          .transition()
-          .duration(1000)
-          .attr("width", scatterwidth)
-          .attr("height", scatterheight)
 
         bssvg.selectAll(".cellcircle")
         	.transition()
@@ -634,8 +688,77 @@ worker.onmessage = function(event) {
 
   }
   function scatterTimeline() {
+
+      bssvg.selectAll(".cellcircle")
+      .classed("unselected", false)
+    bssvg.selectAll(".cellcircle")
+      .classed("selected", false)
+        /*xticks.transition()
+        .duration(500)
+    .attr("opacity", 0)*/
+    console.log(d3.extent(greatesthits, function(d) { return d['date_created']}))
+    xticks.selectAll(".tick").remove()
+    xticks = xticks.selectAll('g')
+    .data([
+    'Jan 2013',  'Jul 2013',  
+    'Jan 2014', 'Jul 2014', 
+    'Jan 2015', 'Jul 2015', 
+    'Jan 2016', 'Jul 2016', 
+    'Jan 2017',  'Jul 2017', 
+    'Jan 2018'])
+
+   xtick = xticks.enter().append("g")
+    xtick.append("line")
+    xtick.append("text")
+
+    xtick.select("line")
+    .attr("x1", function(d) {  return dateScale(parseDate2(d))})
+    .attr("x2", function(d) { return dateScale(parseDate2(d))})
+    .attr("y2", bsheight - bsmargin.bottom+20)
+    .attr("class", "scatter-axis-line")
+
+  xtick.select("text")
+
+    .attr("x", function(d) { return dateScale(parseDate2(d))})
+    .attr("y", (bsheight-bsmargin.bottom) + 40)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d; })
+    .attr("class", "text-labels")
+       
+
+
+
+        var voronoi = d3.voronoi()
+        .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
+     .x(function(d) {  return dateScale(d['date_created']) })
+    .y(function(d) { return sentimentScale(d['sentiment_score']) })
+     cellg = cells.selectAll("g").data(voronoi
+      .polygons(greatesthits))
+       .on("mouseenter", function(d) {
+          data = d
+          mouseOverEvents(data,d3.select(this));
+
+        })
+        .on("mouseleave", function(d) { 
+          data = d
+          mouseOutEvents(data,d3.select(this));
+        });
+    cellg.select("path").transition()
+    .duration(1000)
+    .attr("d", function(d, i) { return d ? "M" + d.join("L") + "Z" : null; })
+    
+
+
+        bssvg.selectAll(".cellcircle")
+          .transition()
+          .duration(1000)
+          
+            .attr("cx", function(d) { console.log(d.data['date_created']); console.log(dateScale(d.data['date_created'])); return dateScale(d.data['date_created']) })
+          .attr("cy", function(d) { return sentimentScale(d.data['sentiment_score']) })
+        
   }
   function buildAverage(average) {
+    console.log(average);
         avg = averageAnnotation.selectAll("g")
         	.data([average])
         	.enter()
@@ -700,7 +823,7 @@ d3.queue()
     .await(display);
 
 function display(error,greatesthits) {
-	console.log("ready")
+
 	var plot = scrollVis();
 
 	  d3.select('#vis')
