@@ -80,6 +80,7 @@ function scroller() {
       }
       sectionPositions.push(top - startPos);
     });
+    console.log(sectionPositions);
     containerStart = container.node().getBoundingClientRect().top + window.pageYOffset;
   }
 
@@ -91,11 +92,12 @@ function scroller() {
    *
    */
   function position() {
-    var pos = window.pageYOffset - 10 - containerStart;
-    var sectionIndex = d3.bisect(sectionPositions, pos);
-    sectionIndex = Math.min(sections.size() - 1, sectionIndex);
+    var pos = window.pageYOffset - 0 - containerStart;
+    var sectionIndex = d3.bisect(sectionPositions, pos) - 1;
+    sectionIndex = Math.max(0, sectionIndex);
 
     if (currentIndex !== sectionIndex) {
+      console.log(pos);
       // @v4 you now `.call` the dispatch callback
       dispatch.call('active', this, sectionIndex);
       currentIndex = sectionIndex;

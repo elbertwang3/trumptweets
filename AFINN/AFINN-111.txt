@@ -228,7 +228,7 @@ bailout	-2
 bamboozle	-2
 bamboozled	-2
 bamboozles	-2
-ban	-2
+ban	-3
 banish	-1
 bankrupt	-3
 bankster	-3
@@ -343,6 +343,7 @@ cancelled	-1
 cancelling	-1
 cancels	-1
 cancer	-1
+cannot -5
 capable	1
 captivated	3
 care	2
@@ -531,7 +532,7 @@ criticized	-2
 criticizes	-2
 criticizing	-2
 critics	-2
-crooked -4
+crooked -5
 cruel	-3
 cruelty	-3
 crush	-1
@@ -566,7 +567,7 @@ deadlock	-2
 deafening	-1
 dear	2
 dearly	3
-death	-2
+death	-4
 debonair	2
 debt	-2
 deceit	-3
@@ -639,11 +640,11 @@ despairs	-3
 desperate	-3
 desperately	-3
 despondent	-3
-destroy	-3
+destroy	-5
 destroyed	-3
 destroying	-3
 destroys	-3
-destruction	-3
+destruction	-4
 destructive	-3
 detached	-1
 detain	-2
@@ -681,7 +682,7 @@ disappointing	-2
 disappointment	-2
 disappointments	-2
 disappoints	-2
-disaster	-2
+disaster	-5
 disasters	-2
 disastrous	-3
 disbelieve	-2
@@ -698,6 +699,7 @@ discouraged	-2
 discredited	-2
 disdain	-2
 disgrace	-2
+disgraceful -4
 disgraced	-2
 disguise	-1
 disguised	-1
@@ -707,7 +709,7 @@ disgust	-3
 disgusted	-3
 disgusting	-3
 disheartened	-2
-dishonest	-2
+dishonest	-5
 disillusioned	-2
 disinclined	-2
 disjointed	-2
@@ -762,6 +764,7 @@ dodging	-2
 dodgy	-2
 does not work	-3
 dolorous	-2
+don't -2
 dont like	-2
 doom	-2
 doomed	-2
@@ -933,9 +936,9 @@ fad	-2
 fag	-3
 faggot	-3
 faggots	-3
-fail	-2
-failed	-2
-failing	-2
+fail	-5
+failed	-5
+failing	-5
 fails	-2
 failure	-2
 failures	-2
@@ -943,7 +946,7 @@ fainthearted	-2
 fair	2
 faith	1
 faithful	3
-fake	-3
+fake	-5
 fakes	-3
 faking	-3
 fallen	-2
@@ -1003,7 +1006,7 @@ flustered	-2
 focused	2
 fond	2
 fondness	2
-fool	-2
+fool	-4
 foolish	-2
 fools	-2
 forced	-1
@@ -1016,7 +1019,7 @@ forgiving	1
 forgotten	-1
 fortunate	2
 frantic	-1
-fraud	-4
+fraud	-5
 frauds	-4
 fraudster	-4
 fraudsters	-4
@@ -1082,7 +1085,7 @@ glamourous	3
 glee	3
 gleeful	3
 gloom	-1
-gloomy	-2
+gloomy	-4
 glorious	2
 glory	2
 glum	-2
@@ -1212,6 +1215,7 @@ horrendous	-3
 horrible	-3
 horrific	-3
 horrified	-3
+horror -3
 hostile	-2
 huckster	-2
 hug	2
@@ -1337,7 +1341,7 @@ intelligent	2
 intense	1
 interest	1
 interested	2
-interesting	2
+interesting	0
 interests	1
 interrogated	-2
 interrupt	-2
@@ -1542,7 +1546,7 @@ misrepresentation	-2
 miss	-2
 missed	-2
 missing	-2
-mistake	-2
+mistake	-4
 mistaken	-2
 mistakes	-2
 mistaking	-2
@@ -1611,7 +1615,7 @@ noisy	-1
 nonsense	-2
 noob	-2
 nosey	-2
-not	-3
+not	-5
 not good	-2
 not working	-3
 notorious	-2
@@ -1709,6 +1713,7 @@ pessimism	-2
 pessimistic	-2
 petrified	-2
 phobic	-2
+phony -4
 picturesque	2
 pileup	-1
 pique	-2
@@ -1876,6 +1881,8 @@ relieving	2
 relishing	2
 remarkable	2
 remorse	-2
+repeal -3
+replace -2
 repulse	-1
 repulsed	-2
 rescue	2
@@ -1947,7 +1954,7 @@ ruined	-2
 ruining	-2
 ruins	-2
 sabotage	-2
-sad	-2
+sad	-5
 sadden	-2
 saddened	-2
 sadly	-2
@@ -2215,7 +2222,7 @@ tears	-2
 tender	2
 tense	-2
 tension	-1
-terrible	-3
+terrible	-5
 terribly	-3
 terrific	4
 terrified	-3
@@ -2242,7 +2249,7 @@ thwarting	-2
 thwarts	-2
 timid	-2
 timorous	-2
-tired	-2
+tired	-3
 tits	-2
 tolerant	2
 toothless	-2
@@ -2412,7 +2419,7 @@ waste	-1
 wasted	-2
 wasting	-2
 wavering	-1
-weak	-2
+weak	-5
 weakness	-2
 wealth	3
 wealthy	2
@@ -2465,7 +2472,7 @@ wowow	4
 wowww	4
 wrathful	-3
 wreck	-2
-wrong	-2
+wrong	-5
 wronged	-2
 wtf	-4
 yeah	1
@@ -2478,3 +2485,4 @@ yummy	3
 zealot	-2
 zealots	-2
 zealous	2
+zero -4

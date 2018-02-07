@@ -133,6 +133,7 @@ worker.onmessage = function(event) {
   }
 };*/
 
+
 	 var chartAnnotation = bssvg.append("g")
              //.attr("transform", "translate(" + bsmargin.left + "," + bsmargin.top + ")")
              .attr("class","swarm-annotation");
@@ -197,6 +198,59 @@ worker.onmessage = function(event) {
             .attr("x2",bswidth-bsmargin.right)
             .attr("y1",sentimentScale(0))
             .attr("y2",sentimentScale(0))
+
+      chartAnnotation.append("text")
+        .attr("class", "chart-annotation")
+        .attr("transform", "translate(100,50)")
+        //.text("What is Trump's sentiment ____________?")
+       
+        .attr("dy", "1em")
+        .call(wrap, 400)
+
+
+      legend = chartAnnotation.append("g")
+      .attr("class", "chart-legend")
+      .attr("transform", "translate(850, 50)")
+
+
+      circlesizes = [3,6,9,12,15]
+      legend.selectAll("circle")
+        .data(circlesizes)
+        .enter()
+        .append("circle")
+        .attr("class", "legend-circle")
+      //  .attr("transform",)
+        .attr("cy", function(d,i) { return d3.sum(circlesizes.slice(0,i+1))*2.5 ; })
+        .attr("r", function(d) { return d; })
+
+        /*legend = chartAnnotation.append("g")
+  .attr("class", "legendSize")
+  .attr("transform", "translate(800, 100)");
+
+var legendSize = d3.legendSize()
+  .scale(beeSize)
+  .shape('circle')
+  .shapePadding(15)
+  .labelOffset(20)
+  .orient('vertical');
+
+chartAnnotation.select(".legendSize")
+  .call(legendSize);*/
+
+      legend.append("text")
+        .attr("class", "legend-annotation")
+        .text("Less retweets")
+        .attr("x", 25)
+        .attr("y", 10)
+
+      legend.append("text")
+        .text("More retweets")
+          .attr("class", "legend-annotation")
+          .attr("transform", "translate(0,110)")
+            .attr("y", 10)
+             .attr("x", 25)
+
+        //.attr("stroke",)
 	cellCircle = cell.append("circle")
 	     .attr("class", "cellcircle")
 	       //.attr('r', 0)
@@ -268,6 +322,7 @@ worker.onmessage = function(event) {
         
         averageAnnotation = bssvg.append('g')
         				.attr("class", "average-annotation")
+                 .attr("opacity", 0)
         avg = averageAnnotation.selectAll("g")
         	.data([average])
         	.enter()
@@ -281,6 +336,7 @@ worker.onmessage = function(event) {
             .attr("y1",function(d) { return sentimentScale(d)})
             .attr("y2",function(d) { return sentimentScale(d)})
           	.attr("class", "average-line")
+
 
         avg.append('text')
         	.attr("x",bsmargin.left)
@@ -362,8 +418,13 @@ worker.onmessage = function(event) {
 		            /*if(viewportWidth < 450 || mobile){
 		              return "250px";
 		            }*/
+                if (data.data.y < 450) {
+                   return (data.data.y + 20) +"px"
+                }else {
 
-		            return (data.data.y + 20) +"px"
+
+		              return (data.data.y -250) +"px"
+                }
 		          })
 		          .style("left",function(d){
 		            /*if(viewportWidth < 450 || mobile){
@@ -422,6 +483,13 @@ worker.onmessage = function(event) {
 
   }
   function showBeeswarm() {
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment...")
+
+    averageAnnotation
+      .transition()
+      .duration(1000)
+      .attr("opacity", 1)
 
     cellCircle.transition()
     .duration(1000)
@@ -445,66 +513,106 @@ worker.onmessage = function(event) {
   function showBeforePhoneSwitch() {
 
   	
-
+      d3.select(".chart-annotation")
+      .text("What is Trump's sentiment...")
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01')})
+  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-03-08')})
   		.classed("selected", true)
   		
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-05-01')})
+  		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-03-08')})
   		.classed("unselected", true)  
 
-  	oldtweets = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01'); })
+  	/*oldtweets = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-03-08'); })
   	oldmean = d3.mean(oldtweets, function(d) { return d['sentiment_score'];})
-  	buildAverage(oldmean);
+  	buildAverage(oldmean);*/
   }
   function showAndroid() {
+
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment from an Android?")
+      .attr("dy", "1rem")
+        .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01') && d.data['source'] == 'Twitter for Android'})
+  		.filter(function(d) { return d.data['source'] == 'Twitter for Android'})
   		.classed("selected", true)
   		
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['date_created'] >= parseDate('2017-05-01') || d.data['source'] != 'Twitter for Android'})
+  		.filter(function(d) { return d.data['source'] != 'Twitter for Android'})
   		.classed("unselected", true)
 
  
 
  
 
-   	androidonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01') && d['source'] == 'Twitter for Android' })
+   	androidonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-03-08') && d['source'] == 'Twitter for Android' })
   	androidmean = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
   	buildAverage(androidmean);
    
      
   }
   function showIphone() {
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment from an iPhone?")
+      .attr("dy", "1rem")
+        .call(wrap, 300)
+
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
   		.classed("selected", false)
 
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-05-01') && d.data['source'] == 'Twitter for iPhone'})
+  		.filter(function(d) { return d.data['date_created'] < parseDate('2017-03-08') && d.data['source'] == 'Twitter for iPhone'})
   		.classed("selected", true)
 
   		
   	bssvg.selectAll(".cellcircle")
-  		.filter(function(d) { return  d.data['date_created'] >= parseDate('2017-05-01') || d.data['source'] != 'Twitter for iPhone'})
+  		.filter(function(d) { return  d.data['date_created'] >= parseDate('2017-03-08') || d.data['source'] != 'Twitter for iPhone'})
   		.classed("unselected", true)
 
-  	iphoneonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-05-01') && d['source'] == 'Twitter for iPhone' })
+  	iphoneonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-03-08') && d['source'] == 'Twitter for iPhone' })
   	iphonemean = d3.mean(iphoneonly, function(d) { return d['sentiment_score'];})
   	buildAverage(iphonemean);
+
+
+    if (lastIndex >= 11) {
+         xticks.selectAll(".tick").remove()
+          xtick = xticks.selectAll('g')
+    .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'])
+    .enter()
+    .append('g')
+    .attr("class", "tick")
+
+    xtick.append("line")
+    .attr("x1", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("x2", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("y2", bsheight - bsmargin.bottom+20)
+    .attr("class", "scatter-axis-line")
+
+  xtick.append("text")
+    .attr("x", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("y", (bsheight-bsmargin.bottom) + 40)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d; })
+    .attr("class", "text-labels")
+
+
+      } 
   }
   function showObama() {
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment about Obama?")
+      .attr("dy", "1rem")
+        .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -526,6 +634,11 @@ worker.onmessage = function(event) {
 
   }
   function showClinton() {
+
+      d3.select(".chart-annotation")
+      .text("What is Trump's sentiment about Hillary?")
+      .attr("dy", "1rem")
+        .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -545,6 +658,11 @@ worker.onmessage = function(event) {
 
   }
   function showCnn() {
+
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment about the media?")
+      .attr("dy", "1rem")
+        .call(wrap, 300)
  
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
@@ -564,6 +682,10 @@ worker.onmessage = function(event) {
   	buildAverage(mediamean);
   }
   function searchTerm() {
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment...")
+      .attr("dy", "1rem")
+        .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -632,6 +754,15 @@ worker.onmessage = function(event) {
           .attr("d", function(d) { return "M" + d.join("L") + "Z"; })
         }
 
+          d3.selectAll('.dividing-line')
+      .transition()
+      .duration(1000)
+      .attr("opacity", 1)
+         xticks
+      .transition()
+      .duration(1000)
+      .attr("opacity", 0)
+
   }
   function transitionScatterTimeOfDay() {
 
@@ -639,12 +770,12 @@ worker.onmessage = function(event) {
       .transition()
       .duration(1000)
       .attr("opacity", 0)
-
-      xtick 
     xticks
       .transition()
       .duration(1000)
       .attr("opacity", 1)
+   
+ 
 
     var voronoi = d3.voronoi()
         .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
@@ -677,7 +808,34 @@ worker.onmessage = function(event) {
 
 
         
+      /*if (lastIndex >= 9) {
+         xticks.selectAll(".tick").remove()
+          xtick = xticks.selectAll('g')
+    .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'])
+    .enter()
+    .append('g')
+    .attr("class", "tick")
 
+    xtick.append("line")
+    .attr("x1", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("x2", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("y2", bsheight - bsmargin.bottom+20)
+    .attr("class", "scatter-axis-line")
+
+  xtick.append("text")
+    .attr("x", function(d) { return timeofdayScale(parseTime2(d))})
+    .attr("y", (bsheight-bsmargin.bottom) + 40)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d; })
+    .attr("class", "text-labels")
+
+
+      } else {
+         xticks
+      .transition()
+      .duration(1000)
+      .attr("opacity", 1)
+      }*/
 
 
          /*avg.transition()
