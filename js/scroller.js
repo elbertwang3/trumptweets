@@ -80,7 +80,6 @@ function scroller() {
       }
       sectionPositions.push(top - startPos);
     });
-    console.log(sectionPositions);
     containerStart = container.node().getBoundingClientRect().top + window.pageYOffset;
   }
 
@@ -97,7 +96,7 @@ function scroller() {
     sectionIndex = Math.max(0, sectionIndex);
 
     if (currentIndex !== sectionIndex) {
-      console.log(pos);
+
       // @v4 you now `.call` the dispatch callback
       dispatch.call('active', this, sectionIndex);
       currentIndex = sectionIndex;

@@ -17,7 +17,7 @@ var scrollVis = function(greatesthits) {
 							//.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
 							.range([bsheight - bsmargin.bottom, bsmargin.top])
 	var colorScale = d3.scaleLinear()
-		.domain([14,0,-13]).range(["#003366","#ffffff","#8b0000"]);
+		.domain([14,0,-13]).range(["#1a80c4","#ffffff","#cc3d3d"]);
 
 
 	var timeofdayScale = d3.scaleTime()
@@ -318,7 +318,7 @@ chartAnnotation.select(".legendSize")
 
 
         average = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
-        console.log(average);
+
         
         averageAnnotation = bssvg.append('g')
         				.attr("class", "average-annotation")
@@ -485,6 +485,7 @@ chartAnnotation.select(".legendSize")
   function showBeeswarm() {
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
+      .attr("dy", "1rem")
 
     averageAnnotation
       .transition()
@@ -585,12 +586,49 @@ chartAnnotation.select(".legendSize")
 
 
     if (lastIndex >= 11) {
+      console.log("getting here");
+
+
+       var voronoi = d3.voronoi()
+        .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
+     .x(function(d) {  return timeofdayScale(parseTime(d['time_created'])) })
+    .y(function(d) { return sentimentScale(d['sentiment_score']) })
+     
+     cellg = cells.selectAll("g").data(voronoi
+      .polygons(greatesthits))
+       .on("mouseenter", function(d) {
+          data = d
+          mouseOverEvents(data,d3.select(this));
+
+        })
+        .on("mouseleave", function(d) { 
+          data = d
+          mouseOutEvents(data,d3.select(this));
+        });
+    cellg.select("path").transition()
+    .duration(1000)
+    .attr("d", function(d, i) { return d ? "M" + d.join("L") + "Z" : null; })
+    
+
+
+        bssvg.selectAll(".cellcircle")
+          .transition()
+          .duration(1000)
+          
+            .attr("cx", function(d) { return timeofdayScale(parseTime(d.data['time_created'])) })
+          .attr("cy", function(d) { return sentimentScale(d.data['sentiment_score']) })
+
+
          xticks.selectAll(".tick").remove()
+         console.log(xticks);
+         console.log(xticks.selectAll('g')
+    .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM']))
           xtick = xticks.selectAll('g')
     .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'])
     .enter()
     .append('g')
     .attr("class", "tick")
+
 
     xtick.append("line")
     .attr("x1", function(d) { return timeofdayScale(parseTime2(d))})
@@ -604,6 +642,9 @@ chartAnnotation.select(".legendSize")
     .attr("text-anchor", "middle")
     .text(function(d) { return d; })
     .attr("class", "text-labels")
+
+
+
 
 
       } 
@@ -688,7 +729,6 @@ chartAnnotation.select(".legendSize")
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
       .attr("dy", "1rem")
-        .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -859,7 +899,7 @@ chartAnnotation.select(".legendSize")
     .attr("opacity", 0)*/
     console.log(d3.extent(greatesthits, function(d) { return d['date_created']}))
     xticks.selectAll(".tick").remove()
-    xticks = xticks.selectAll('g')
+    xtick = xticks.selectAll('g')
     .data([
     'Jan 2013',  'Jul 2013',  
     'Jan 2014', 'Jul 2014', 
@@ -867,18 +907,18 @@ chartAnnotation.select(".legendSize")
     'Jan 2016', 'Jul 2016', 
     'Jan 2017',  'Jul 2017', 
     'Jan 2018'])
+    .enter()
+    .append("g")
+    .attr("class", "tick")
 
-   xtick = xticks.enter().append("g")
+
     xtick.append("line")
-    xtick.append("text")
-
-    xtick.select("line")
     .attr("x1", function(d) {  return dateScale(parseDate2(d))})
     .attr("x2", function(d) { return dateScale(parseDate2(d))})
     .attr("y2", bsheight - bsmargin.bottom+20)
     .attr("class", "scatter-axis-line")
 
-  xtick.select("text")
+  xtick.append("text")
 
     .attr("x", function(d) { return dateScale(parseDate2(d))})
     .attr("y", (bsheight-bsmargin.bottom) + 40)
@@ -914,7 +954,7 @@ chartAnnotation.select(".legendSize")
           .transition()
           .duration(1000)
           
-            .attr("cx", function(d) { console.log(d.data['date_created']); console.log(dateScale(d.data['date_created'])); return dateScale(d.data['date_created']) })
+            .attr("cx", function(d) { return dateScale(d.data['date_created']) })
           .attr("cy", function(d) { return sentimentScale(d.data['sentiment_score']) })
         
   }
@@ -955,6 +995,8 @@ chartAnnotation.select(".legendSize")
    */
 
   chart.activate = function (index) {
+    console.log(index);
+    console.log(lastIndex)
     activeIndex = index;
     var sign = (activeIndex - lastIndex) < 0 ? -1 : 1;
     var scrolledSections = d3.range(lastIndex + sign, activeIndex + sign, sign);
