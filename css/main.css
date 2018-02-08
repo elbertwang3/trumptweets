@@ -255,10 +255,10 @@ body {
 
 }*/
 
-/*.voronoi {
+.voronoi {
       stroke: black;
       fill: none;
-    }*/
+    }
 
 .scatter-axis-line {
 	stroke: rgba(222, 222, 230, 0.9);

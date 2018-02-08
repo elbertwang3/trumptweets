@@ -59,6 +59,7 @@ var scrollVis = function(greatesthits) {
 	var bssvg;
   var xticks;
   var xtick;
+  var isBee = true;
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
@@ -418,22 +419,27 @@ chartAnnotation.select(".legendSize")
 		            /*if(viewportWidth < 450 || mobile){
 		              return "250px";
 		            }*/
+              if (isBee) {
                 if (data.data.y < 450) {
                    return (data.data.y + 20) +"px"
-                }else {
-
-
+                } else {
 		              return (data.data.y -250) +"px"
                 }
-		          })
-		          .style("left",function(d){
+              } else {
+                return sentimentScale(data.data.sentiment_score) + 20 +"px"
+              }
+		    })
+		    .style("left",function(d){
 		            /*if(viewportWidth < 450 || mobile){
 		              return "0px";
 		            }*/
-		            
+		      if (isBee) {
 		            return (data.data.x - 250)+"px";
-		          })
-		    
+              } else {
+                return timeofdayScale(parseTime(data.data.time_created) - 250;
+              }
+		    })
+		     
 		
 
     }
@@ -537,7 +543,7 @@ chartAnnotation.select(".legendSize")
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment from an Android?")
       .attr("dy", "1rem")
-        .call(wrap, 300)
+        .call(wrap, 310)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -564,7 +570,7 @@ chartAnnotation.select(".legendSize")
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment from an iPhone?")
       .attr("dy", "1rem")
-        .call(wrap, 300)
+        .call(wrap, 310)
 
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
@@ -653,7 +659,7 @@ chartAnnotation.select(".legendSize")
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment on Obama?")
       .attr("dy", "1rem")
-        .call(wrap, 300)
+        .call(wrap, 310)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -682,7 +688,7 @@ chartAnnotation.select(".legendSize")
       d3.select(".chart-annotation")
       .text("What is Trump's sentiment on Hillary?")
       .attr("dy", "1rem")
-        .call(wrap, 300)
+        .call(wrap, 310)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -706,7 +712,7 @@ chartAnnotation.select(".legendSize")
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment on the media?")
       .attr("dy", "1rem")
-        .call(wrap, 300)
+        .call(wrap, 310)
  
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
@@ -726,9 +732,11 @@ chartAnnotation.select(".legendSize")
   	buildAverage(mediamean);
   }
   function searchTerm() {
+     isBee = true;
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
       .attr("dy", "1rem")
+      .call(wrap, 310)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -771,7 +779,7 @@ chartAnnotation.select(".legendSize")
         cellg.select("g")
           .on("mouseenter", function(d) {
           data = d
-         mouseOverEvents (data,d3.select(this));
+         mouseOverEvents(data,d3.select(this));
 
         })
         .on("mouseleave", function(d) { 
@@ -808,6 +816,7 @@ chartAnnotation.select(".legendSize")
 
   }
   function transitionScatterTimeOfDay() {
+    isBee = false;
 
   	d3.selectAll('.dividing-line')
       .transition()
@@ -828,6 +837,7 @@ chartAnnotation.select(".legendSize")
      cellg = cells.selectAll("g").data(voronoi
       .polygons(greatesthits))
        .on("mouseenter", function(d) {
+        console.log(d);
           data = d
           mouseOverEvents(data,d3.select(this));
 
