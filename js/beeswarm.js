@@ -610,7 +610,7 @@ chartAnnotation.select(".legendSize")
   }
   function showObama() {
     d3.select(".chart-annotation")
-      .text("What is Trump's sentiment about Obama?")
+      .text("What is Trump's sentiment on Obama?")
       .attr("dy", "1rem")
         .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
@@ -627,6 +627,9 @@ chartAnnotation.select(".legendSize")
   		.filter(function(d) { return d.data['text'].indexOf('Obama') == -1; })
   		.classed("unselected", true)
 
+
+
+
   	obamaonly = greatesthits.filter(function(d) {  return d['text'].indexOf('Obama') !== -1; })
   	obamamean = d3.mean(obamaonly, function(d) { return d['sentiment_score'];})
   	buildAverage(obamamean);
@@ -636,7 +639,7 @@ chartAnnotation.select(".legendSize")
   function showClinton() {
 
       d3.select(".chart-annotation")
-      .text("What is Trump's sentiment about Hillary?")
+      .text("What is Trump's sentiment on Hillary?")
       .attr("dy", "1rem")
         .call(wrap, 300)
   	bssvg.selectAll(".cellcircle")
@@ -660,7 +663,7 @@ chartAnnotation.select(".legendSize")
   function showCnn() {
 
     d3.select(".chart-annotation")
-      .text("What is Trump's sentiment about the media?")
+      .text("What is Trump's sentiment on the media?")
       .attr("dy", "1rem")
         .call(wrap, 300)
  
@@ -728,7 +731,7 @@ chartAnnotation.select(".legendSize")
         cellg.select("g")
           .on("mouseenter", function(d) {
           data = d
-          mouseOverEvents(data,d3.select(this));
+         mouseOverEvents (data,d3.select(this));
 
         })
         .on("mouseleave", function(d) { 
@@ -1052,7 +1055,7 @@ var parseDate = d3.timeParse("%Y-%m-%d")
   d.sentiment_score = +d.sentiment_score;
   d.favorite_count = +d.favorite_count;
   d.retweet_count = +d.retweet_count;
-  var realdate = moment('January 1, 1970 ' + d.time_created.slice(11,19)).add(16, 'h').toDate()
+  var realdate = moment('January 1, 1970 ' + d.time_created.slice(11,19)).add(19, 'h').toDate()
   var realtime = addZero(realdate.getHours()) + ":" + addZero(realdate.getMinutes()) + ":" + addZero(realdate.getSeconds())
   d.date_created = parseDate(d.date_created.slice(0,10))
   d.time_created = realtime;
