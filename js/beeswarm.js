@@ -17,7 +17,7 @@ var scrollVis = function(greatesthits) {
 							//.domain(d3.extent(greatesthits, function(d) { return d.sentiment_score; }))
 							.range([bsheight - bsmargin.bottom, bsmargin.top])
 	var colorScale = d3.scaleLinear()
-		.domain([14,0,-13]).range(["#1a80c4","#ffffff","#cc3d3d"]);
+		.domain([1,0,-1]).range(["#1a80c4","#ffffff","#cc3d3d"]);
 
 
 	var timeofdayScale = d3.scaleTime()
@@ -59,7 +59,7 @@ var scrollVis = function(greatesthits) {
 	var bssvg;
   var xticks;
   var xtick;
-  var isBee = true;
+  var cut = "bee";
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
@@ -211,7 +211,7 @@ worker.onmessage = function(event) {
 
       legend = chartAnnotation.append("g")
       .attr("class", "chart-legend")
-      .attr("transform", "translate(850, 50)")
+      .attr("transform", "translate(100, 500)")
 
 
       circlesizes = [3,6,9,12,15]
@@ -419,24 +419,33 @@ chartAnnotation.select(".legendSize")
 		            /*if(viewportWidth < 450 || mobile){
 		              return "250px";
 		            }*/
-              if (isBee) {
+              if (cut == "bee") {
                 if (data.data.y < 450) {
                    return (data.data.y + 20) +"px"
                 } else {
 		              return (data.data.y -250) +"px"
                 }
               } else {
-                return sentimentScale(data.data.sentiment_score) + 20 +"px"
+                 if (sentimentScale(data.data.sentiment_score) + 20 < 450) {
+                   return sentimentScale(data.data.sentiment_score) + 20
+                } else {
+                  return sentimentScale(data.data.sentiment_score) -250 +"px"
+                }
               }
 		    })
 		    .style("left",function(d){
 		            /*if(viewportWidth < 450 || mobile){
 		              return "0px";
 		            }*/
-		      if (isBee) {
+		      if (cut == "bee") {
 		            return (data.data.x - 250)+"px";
-              } else {
-                return timeofdayScale(parseTime(data.data.time_created) - 250;
+              } 
+          else if (cut == "timeofday") {
+                return timeofdayScale(parseTime(data.data.time_created)) - 250;
+              } 
+            else {
+              console.log(dateScale(parseDate(data.data.date_created)))
+                  return dateScale(parseDate(data.data.date_created)) - 250;
               }
 		    })
 		     
@@ -467,9 +476,10 @@ chartAnnotation.select(".legendSize")
 		activateFunctions[7] = showCnn;
 		activateFunctions[8] = searchTerm;
 		activateFunctions[9] = transitionScatterTimeOfDay;
-    activateFunctions[10] = showAndroid;
-    activateFunctions[11] = showIphone;
-		activateFunctions[12] = scatterTimeline;
+    activateFunctions[10] = showFoxAndFriends;
+    activateFunctions[11] = showAndroid;
+    activateFunctions[12] = showIphone;
+		activateFunctions[13] = scatterTimeline;
 		
 
 
@@ -491,7 +501,8 @@ chartAnnotation.select(".legendSize")
   function showBeeswarm() {
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
-      .attr("dy", "1rem")
+       .attr("dy", "1rem")
+        .call(wrap, 310)
 
     averageAnnotation
       .transition()
@@ -522,6 +533,8 @@ chartAnnotation.select(".legendSize")
   	
       d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
+       .attr("dy", "1rem")
+        .call(wrap, 310)
   	bssvg.selectAll(".cellcircle")
   		.classed("unselected", false)
   	bssvg.selectAll(".cellcircle")
@@ -593,7 +606,7 @@ chartAnnotation.select(".legendSize")
 
     if (lastIndex >= 11) {
       console.log("getting here");
-
+        cut = "timeofday";
 
        var voronoi = d3.voronoi()
         .extent([[-bsmargin.left, -bsmargin.top], [bswidth + bsmargin.right, bsheight + bsmargin.top]])
@@ -626,9 +639,7 @@ chartAnnotation.select(".legendSize")
 
 
          xticks.selectAll(".tick").remove()
-         console.log(xticks);
-         console.log(xticks.selectAll('g')
-    .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM']))
+
           xtick = xticks.selectAll('g')
     .data(['3 AM', '6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'])
     .enter()
@@ -732,7 +743,7 @@ chartAnnotation.select(".legendSize")
   	buildAverage(mediamean);
   }
   function searchTerm() {
-     isBee = true;
+     cut = "bee"
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
       .attr("dy", "1rem")
@@ -816,7 +827,15 @@ chartAnnotation.select(".legendSize")
 
   }
   function transitionScatterTimeOfDay() {
-    isBee = false;
+    cut = "timeofday"
+      bssvg.selectAll(".cellcircle")
+      .classed("unselected", false)
+    bssvg.selectAll(".cellcircle")
+      .classed("selected", false)
+     d3.select(".chart-annotation")
+      .text("What is Trump's sentiment...")
+      .attr("dy", "1rem")
+        .call(wrap, 310)
 
   	d3.selectAll('.dividing-line')
       .transition()
@@ -837,7 +856,7 @@ chartAnnotation.select(".legendSize")
      cellg = cells.selectAll("g").data(voronoi
       .polygons(greatesthits))
        .on("mouseenter", function(d) {
-        console.log(d);
+
           data = d
           mouseOverEvents(data,d3.select(this));
 
@@ -861,6 +880,8 @@ chartAnnotation.select(".legendSize")
 
 
         
+      mean = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
+    buildAverage(mean);
       /*if (lastIndex >= 9) {
          xticks.selectAll(".tick").remove()
           xtick = xticks.selectAll('g')
@@ -898,7 +919,37 @@ chartAnnotation.select(".legendSize")
 
 
   }
+  function showFoxAndFriends() {
+    d3.select(".chart-annotation")
+      .text("What is Trump's sentiment when he watches Fox and Friends?")
+      .attr("dy", "1rem")
+        .call(wrap, 310)
+    console.log("getting to showFoxAndFriends")
+      bssvg.selectAll(".cellcircle")
+      .classed("unselected", false)
+    bssvg.selectAll(".cellcircle")
+      .classed("selected", false)
+
+    bssvg.selectAll(".cellcircle")
+      .filter(function(d) {  return parseTime(d.data['time_created']) >= parseTime("06:00:00") && parseTime(d.data['time']) <= parseTime("09:00:00") })
+      .classed("selected", true)
+
+      
+    bssvg.selectAll(".cellcircle")
+      .filter(function(d) {  return parseTime(d.data['time_created']) < parseTime("06:00:00") || parseTime(d.data['time_created']) > parseTime("09:00:00") })
+      .classed("unselected", true)
+
+        foxonly = greatesthits.filter(function(d) {return parseTime(d['time_created']) >= parseTime("06:00:00") && parseTime(d['time_created']) <= parseTime("09:00:00") })
+    foxmean = d3.mean(foxonly, function(d) { return d['sentiment_score'];})
+    buildAverage(foxmean);
+
+  }
   function scatterTimeline() {
+      cut = "timeline"
+      d3.select(".chart-annotation")
+      .text("What is Trump's sentiment...")
+      .attr("dy", "1rem")
+        .call(wrap, 310)
 
       bssvg.selectAll(".cellcircle")
       .classed("unselected", false)
@@ -907,7 +958,7 @@ chartAnnotation.select(".legendSize")
         /*xticks.transition()
         .duration(500)
     .attr("opacity", 0)*/
-    console.log(d3.extent(greatesthits, function(d) { return d['date_created']}))
+   
     xticks.selectAll(".tick").remove()
     xtick = xticks.selectAll('g')
     .data([
@@ -966,10 +1017,14 @@ chartAnnotation.select(".legendSize")
           
             .attr("cx", function(d) { return dateScale(d.data['date_created']) })
           .attr("cy", function(d) { return sentimentScale(d.data['sentiment_score']) })
+
+
+        mean = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
+    buildAverage(mean);
         
   }
   function buildAverage(average) {
-    console.log(average);
+
         avg = averageAnnotation.selectAll("g")
         	.data([average])
         	.enter()
@@ -1005,8 +1060,7 @@ chartAnnotation.select(".legendSize")
    */
 
   chart.activate = function (index) {
-    console.log(index);
-    console.log(lastIndex)
+
     activeIndex = index;
     var sign = (activeIndex - lastIndex) < 0 ? -1 : 1;
     var scrolledSections = d3.range(lastIndex + sign, activeIndex + sign, sign);
@@ -1032,10 +1086,11 @@ chartAnnotation.select(".legendSize")
 
 
 d3.queue()
-    .defer(d3.csv, "data/greatesthits.csv", type)
+    .defer(d3.csv, "data/final.csv", type)
     .await(display);
 
 function display(error,greatesthits) {
+  console.log(greatesthits);
 
 	var plot = scrollVis();
 
@@ -1107,10 +1162,15 @@ var parseDate = d3.timeParse("%Y-%m-%d")
   d.sentiment_score = +d.sentiment_score;
   d.favorite_count = +d.favorite_count;
   d.retweet_count = +d.retweet_count;
-  var realdate = moment('January 1, 1970 ' + d.time_created.slice(11,19)).add(19, 'h').toDate()
+  
+  var realdate = moment('January 1, 1970 ' + d.time_created).add(19, 'h').toDate()
+
   var realtime = addZero(realdate.getHours()) + ":" + addZero(realdate.getMinutes()) + ":" + addZero(realdate.getSeconds())
-  d.date_created = parseDate(d.date_created.slice(0,10))
+  d.date_created = parseDate(d.date_created)
   d.time_created = realtime;
+
+
+ 
 
   //time_created = new Date(d.time_created.slice(11,19).subtract(8, 'h'))
   //console.log(time_created);
