@@ -314,3 +314,30 @@ h2 {
 	font-size: 12px;
 	text-anchor: start;
 }
+
+.finder {
+
+	padding-top: 3rem;
+	display: block;
+    margin: 0 auto;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    max-width: 240px;
+}
+
+#myinput {
+	font-family: 'Roboto';
+	
+
+	font-size: 16px;
+    top: 0px;
+    left: 0px;
+    border-color: transparent;
+    box-shadow: none;
+    opacity: 1;
+    background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
+        max-width: 240px;
+
+
+}
+

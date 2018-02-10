@@ -10,6 +10,7 @@
      
 
 	    <title>Trump's Greatest Hits</title>
+      <link href="css/awesomplete.css" rel="stylesheet">
 	    <link href="css/main.css" rel="stylesheet">
 	   
 	    
@@ -92,7 +93,7 @@
   				</section>
   			<section class="step">
     
-  					 <p class="prose">Both his staff and Trump's own tweets now come from an iPhone, making it difficult to tell who tweeted what. However, using data under the assumption that Android tweets were from Trump himself and iPhone tweets from his staff, a data scientist created <a href="http://didtrumptweetit.com/">DidTrumpTweetIt</a> by training a machine learning model that classifies whether his current tweets are his own or his staff's. </p>
+  					 <p class="prose">Both his staff and Trump's own tweets now come from an iPhone, making it difficult to tell who tweeted what. However, using data under the assumption that Android tweets were from Trump himself and iPhone tweets from his staff, a data scientist created <a href="http://didtrumptweetit.com/">DidTrumpTweetIt</a>, training a machine learning model to classify whether his current tweets are his own or his staff's.</p>
   				</section>
   			<section class="step">
            <h2> On Obama</h2>
@@ -113,6 +114,11 @@
            <h2> Search for your own term</h2>
   					<p class="prose">
   			Use the search bar to filter the graph for a topic like "Mika" or "Russia."</p>
+          <div class="finder">
+            <input id="myinput" placeholder="Enter a term...">
+            
+        
+          </div>
   				</section>
   			<section class="step">
            <h2> Time of Day</h2>
@@ -165,6 +171,7 @@
   		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js"></script>
   		<script sync src="https://platform.twitter.com/widgets.js"></script>
   		<script src="js/scroller.js"></script>
+      <script src="js/awesomplete.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.5/d3-legend.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
   		<script src="js/index.js"></script>

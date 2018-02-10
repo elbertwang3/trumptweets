@@ -1,6 +1,7 @@
 
 var scrollVis = function(greatesthits) {
 	beeswarmdiv = d3.select('.beeswarm')
+  input = document.getElementById("myinput");
 	bsmargin = {top: 40, right: 40, bottom: 50, left: 90},
     bswidth = 1000,
     bsheight = window.innerHeight,
@@ -133,7 +134,11 @@ worker.onmessage = function(event) {
    return ended(event.data);
   }
 };*/
-
+textfromjson = greatesthits.map(function(d) { return d['text']})
+console.log(textfromjson)
+  new Awesomplete(input, {
+    list: textfromjson
+  });
 
 	 var chartAnnotation = bssvg.append("g")
              //.attr("transform", "translate(" + bsmargin.left + "," + bsmargin.top + ")")
@@ -444,8 +449,8 @@ chartAnnotation.select(".legendSize")
                 return timeofdayScale(parseTime(data.data.time_created)) - 250;
               } 
             else {
-              console.log(dateScale(parseDate(data.data.date_created)))
-                  return dateScale(parseDate(data.data.date_created)) - 250;
+            
+                  return dateScale(data.data.date_created) - 250;
               }
 		    })
 		     
@@ -744,6 +749,8 @@ chartAnnotation.select(".legendSize")
   }
   function searchTerm() {
      cut = "bee"
+
+
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
       .attr("dy", "1rem")
@@ -756,6 +763,56 @@ chartAnnotation.select(".legendSize")
     mean = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
     buildAverage(mean);
 
+
+    document.getElementById('myinput').addEventListener("awesomplete-select", function(event) {
+
+      bssvg.selectAll(".cellcircle")
+      .filter(function(d) { return d.data['text'].toLowerCase().indexOf(event.text.label.toLowerCase()) !== -1 })
+      .classed("selected", true)
+
+      
+    bssvg.selectAll(".cellcircle")
+      .filter(function(d) { return d.data['text'].toLowerCase().indexOf(event.text.label.toLowerCase()) == -1})
+      .classed("unselected", true)
+
+        searchonly = greatesthits.filter(function(d) { return d.data['text'].toLowerCase().indexOf(event.text.label.toLowerCase()) == -1})
+    searchmean = d3.mean(searchonly, function(d) { return d['sentiment_score'];})
+    buildAverage(searchmean);
+  });
+
+  $("#myinput").on('keyup', function (e) {
+    if (e.keyCode == 13) {
+      console.log($(".awesomplete ul"))
+      $(".awesomplete ul").attr("hidden", "");
+       searchterm = document.getElementById("myinput").value;
+       bssvg.selectAll(".cellcircle")
+      .filter(function(d) { return d.data['text'].toLowerCase().indexOf(searchterm.toLowerCase()) !== -1 })
+      .classed("selected", true)
+
+      
+    bssvg.selectAll(".cellcircle")
+      .filter(function(d) { return d.data['text'].toLowerCase().indexOf(searchterm.toLowerCase()) == -1})
+      .classed("unselected", true)
+
+        searchonly = greatesthits.filter(function(d) { return d['text'].toLowerCase().indexOf(searchterm.toLowerCase()) !== -1})
+    searchmean = d3.mean(searchonly, function(d) { return d['sentiment_score'];})
+    buildAverage(searchmean);
+
+     d3.select(".chart-annotation")
+      .text("What is Trump's sentiment on " + searchterm + "?")
+      .attr("dy", "1rem")
+      .call(wrap, 310)
+    }
+});
+  document.getElementById('myinput').addEventListener("awesomplete-open", function(event) {
+     bssvg.selectAll(".cellcircle")
+      .classed("unselected", false)
+    bssvg.selectAll(".cellcircle")
+      .classed("selected", false)
+       mean = d3.mean(greatesthits, function(d) { return d['sentiment_score'];})
+    buildAverage(mean);
+    
+  });
 
       if (lastIndex >= 8) {
 
