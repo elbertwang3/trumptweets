@@ -12,6 +12,7 @@ body {
 }
 .beeswarm {
 	position: relative;
+	max-width: 1000px;
 }
 .beeswarm .tooltip {
 
@@ -128,6 +129,8 @@ body {
 	font-size: 24px;
 	font-weight: 900;
 	text-align: left;
+	padding-right: 1rem;
+	padding-left: 1rem;
 	
 }
 .credits p {
@@ -141,6 +144,8 @@ body {
 	max-width: 600px;
 	padding-top: 1rem;
 	padding-bottom: 1rem;
+	padding-right: 1rem;
+	padding-left: 1rem;
 }
 .byline-div {
 	padding-top: 2.2rem;
@@ -204,6 +209,8 @@ body {
 	max-width: 600px;
 	padding-top: 1rem;
 	padding-bottom: 1rem;
+	padding-right: 1rem;
+	padding-left: 1rem;
 }
 
 .step .prose {
@@ -228,6 +235,8 @@ body {
 	max-width: 600px;
 	padding-top: 1rem;
 	padding-bottom: 1rem;
+	padding-right: 1rem;
+	padding-left: 1rem;
 }
 #intro .prose:last-child {
 	padding-bottom: 3rem;
@@ -248,6 +257,7 @@ body {
 
 .step {
 	 margin-bottom: 500px;
+	 padding: 1rem;
 }
 
 .step:last-child {
@@ -258,7 +268,6 @@ body {
 	display: inline-block;
 
 
-  z-index: 100;
 
   max-width: 1000px;
 }
@@ -415,6 +424,32 @@ h2 {
     outline: 0;
     border-radius: 3px;
     border: 1px solid #ddd;
+
+}
+
+@media only screen and (max-width: 600px) { 
+	#sections {
+		 width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+	}
+
+	#vis {
+		 width: 100%;
+  height: 100%;
+ 
+  top: 0;
+  left: 0;
+
+	}
+
+	.step {
+		opacity: 0.5;
+		background-color: white;
+		z-index: 100;
+	}
 
 }
 

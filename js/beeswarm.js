@@ -2,8 +2,15 @@
 var scrollVis = function(greatesthits) {
 	beeswarmdiv = d3.select('.beeswarm')
   input = document.getElementById("myinput");
-	bsmargin = {top: 40, right: 40, bottom: 50, left: 90},
-    bswidth = 1000,
+	bsmargin = {top: 40, right: 40, bottom: 50, left: 90};
+  if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 600) {
+ // some code..
+  bswidth = window.innerWidth;
+  bsheight = window.innerHeight;
+} else {
+   bswidth = 1000
+}
+   
     bsheight = window.innerHeight,
     scatterwidth = 1000,
     scatterheight = window.innerHeight
@@ -23,10 +30,10 @@ var scrollVis = function(greatesthits) {
 
 	var timeofdayScale = d3.scaleTime()
 					//.domain([d3.extent(greatesthits, function(d) { return parseTime(['time_created']); })])
-					.range([bsmargin.left, scatterwidth - bsmargin.right])
+					.range([bsmargin.left, bswidth - bsmargin.right])
 	var dateScale = d3.scaleTime()
 					//.domain([d3.extent(greatesthits, function(d) { return d['date_created']; })])
-					.range([bsmargin.left, scatterwidth - bsmargin.right])
+					.range([bsmargin.left, bswidth - bsmargin.right])
 
 
 	//retweetextent = d3.extent(greatesthits, function(d) { return d.retweet_count; })
@@ -61,14 +68,33 @@ var scrollVis = function(greatesthits) {
   var xticks;
   var xtick;
   var cut = "bee";
+  var beechart;
+  var beeaspect;
+  var beecontainer;
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
 	
 	    	greatesthits = rawData;
 			bssvg = beeswarmdiv.append("svg")
+       .attr("viewBox", "0 0 " + (bswidth) + " " + (bsheight))
 				.attr("width", bswidth)
 				.attr("height", bsheight)
+        .attr("class", "beesvg")
+
+      beechart = $(".beesvg");
+console.log(beechart);
+if (window.innerWidth > 1000) {
+   beeaspect = beechart.width() / beechart.height();
+   beecontainer = beechart.parent();
+    beechart.attr("viewBox", "0 0 " + (beechart.width()) + " " + (beechart.height()))
+} else {
+
+  beeaspect = window.innerWidth / window.innerHeight;
+
+       beecontainer = beechart.parent();
+        bssvg.attr("viewBox", "0 0 " + (window.innerWidth) + " " + (window.innerHeight))
+}
 
 			var defs = bssvg.append("svg:defs")
 			defs
@@ -373,6 +399,28 @@ chartAnnotation.select(".legendSize")
     .attr("text-anchor", "middle")
     .text(function(d) { return d; })
     .attr("class", "text-labels")
+
+    $(window).on("resize", function() {
+
+      console.log(beecontainer);
+   var targetWidth = beecontainer.width();
+   console.log(window.innerWidth);
+   if (targetWidth > window.innerWidth) {
+      targetWidth = window.innerWidth;
+   }
+   console.log(targetWidth);
+    beechart.attr("width", targetWidth);
+    beechart.attr("height", Math.round(targetWidth / beeaspect));
+    /*var b = path.bounds(jsonmap),
+      s = .95 / Math.max((b[1][0] - b[0][0]) / targetWidth, (b[1][1] - b[0][1]) / (targetWidth / peaksaspect)),
+      t = [(targetWidth - s * (b[1][0] + b[0][0])) / 2, ((targetWidth / peaksaspect) - s * (b[1][1] + b[0][1])) / 2];
+   
+    
+  // Update the projection to use computed scale & translate.
+  projection
+      .scale(s)
+      .translate(t); */
+}).trigger("resize");
        
         
 
@@ -514,6 +562,7 @@ chartAnnotation.select(".legendSize")
 
   }
   function showBeeswarm() {
+    cut = "bee";
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
        .attr("dy", "1rem")
@@ -545,7 +594,7 @@ chartAnnotation.select(".legendSize")
 
   function showBeforePhoneSwitch() {
 
-  	
+  	 cut = "bee";
       d3.select(".chart-annotation")
       .text("What is Trump's sentiment...")
        .attr("dy", "1rem")
@@ -567,7 +616,7 @@ chartAnnotation.select(".legendSize")
   	buildAverage(oldmean);*/
   }
   function showAndroid() {
-
+    cut = "bee";
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment from an Android?")
       .attr("dy", "1rem")
@@ -591,10 +640,17 @@ chartAnnotation.select(".legendSize")
    	androidonly = greatesthits.filter(function(d) { return d['date_created'] < parseDate('2017-03-08') && d['source'] == 'Twitter for Android' })
   	androidmean = d3.mean(androidonly, function(d) { return d['sentiment_score'];})
   	buildAverage(androidmean);
+
+     if (lastIndex >= 10) {
+   
+      console.log("getting here");
+        cut = "timeofday";
+      }
    
      
   }
   function showIphone() {
+    cut = "bee";
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment from an iPhone?")
       .attr("dy", "1rem")
@@ -620,6 +676,7 @@ chartAnnotation.select(".legendSize")
 
 
     if (lastIndex >= 11) {
+
       console.log("getting here");
         cut = "timeofday";
 
@@ -682,6 +739,7 @@ chartAnnotation.select(".legendSize")
       } 
   }
   function showObama() {
+    cut = "bee";
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment on Obama?")
       .attr("dy", "1rem")
@@ -710,7 +768,7 @@ chartAnnotation.select(".legendSize")
 
   }
   function showClinton() {
-
+    cut = "bee";
       d3.select(".chart-annotation")
       .text("What is Trump's sentiment on Hillary?")
       .attr("dy", "1rem")
@@ -734,7 +792,7 @@ chartAnnotation.select(".legendSize")
 
   }
   function showCnn() {
-
+    cut = "bee";
     d3.select(".chart-annotation")
       .text("What is Trump's sentiment on the media?")
       .attr("dy", "1rem")
@@ -1112,6 +1170,11 @@ chartAnnotation.select(".legendSize")
         	.attr("y",function(d) { return sentimentScale(d)})
    	
    }
+
+
+
+
+
 	  /**
   }
   }
@@ -1174,7 +1237,14 @@ function display(error,greatesthits) {
        scroll.on('active', function (index) {
     // highlight current step text
     d3.selectAll('.step')
-      .style('opacity', function (d, i) { return i === index ? 1 : 0.1; });
+      .style('opacity', function (d, i) { 
+         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 600) {
+            return i === index ? 0.8 : 0.1; 
+          } else {
+
+        return i === index ? 1 : 0.1; 
+      }
+      });
 
     // activate current section
     plot.activate(index);

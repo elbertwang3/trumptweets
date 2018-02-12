@@ -4,7 +4,7 @@
   
 
   $(window).scroll(function() {
-  	console.log(window.pageYOffset)
+
   	//console.log(window.pageYOffset)
   	if (window.pageYOffset >= 2399 && window.pageYOffset <= 12869) {
 	  	//console.log("GETTING fixed")
