@@ -103,6 +103,45 @@ body {
 	background-color: #00aced;
 }
 
+#ending {
+	margin-top: 50px;
+}
+
+
+
+#conclusion p:last-child {
+	padding-bottom: 100px;
+		border-bottom: 1px solid #dedede;
+}
+
+.credits {
+	font-family: "Open Sans";
+	text-align: left;
+	margin-top: 50px;
+
+}
+
+.credits h2 {
+	max-width: 600px;
+	margin: 0 auto;
+	font-family: "Open Sans";
+	font-size: 24px;
+	font-weight: 900;
+	text-align: left;
+	
+}
+.credits p {
+	font-size: 12px;
+	display: block;
+	margin: auto;
+	text-align: left;
+
+
+	line-height: 1.4;
+	max-width: 600px;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
 .byline-div {
 	padding-top: 2.2rem;
 	padding-bottom: 1rem;
@@ -114,6 +153,23 @@ body {
 	
 
 
+}
+
+#intro a {
+
+	color: #fff;
+
+}
+#graphic a {
+
+	color: #000;
+
+
+}
+#ending a {
+	color: #000;
+	padding-bottom: 100px;
+ 
 }
 
 .lede {
@@ -161,6 +217,18 @@ body {
 	padding: 1rem;
 
 }
+
+#conclusion .prose {
+	display: block;
+	margin: auto;
+	text-align: left;
+	font-family: "Merriweather";
+	font-size: 16;
+	line-height: 1.8;
+	max-width: 600px;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
 #intro .prose:last-child {
 	padding-bottom: 3rem;
 
@@ -179,7 +247,11 @@ body {
 }
 
 .step {
-	 margin-bottom: 200px;
+	 margin-bottom: 500px;
+}
+
+.step:last-child {
+	margin-bottom: 200px;
 }
 
 #vis {
@@ -203,6 +275,12 @@ body {
 	/*top: 200;*/
 	top: 0;
 
+}
+
+.is_bottom {
+	position: absolute;
+	bottom: 0;
+    top: auto;
 }
 
 .annotation-line {
@@ -322,22 +400,21 @@ h2 {
     margin: 0 auto;
     border-bottom: 1px solid #fff;
     position: relative;
-    max-width: 240px;
+    width: 350px;
 }
 
 #myinput {
 	font-family: 'Roboto';
 	
 
-	font-size: 16px;
-    top: 0px;
-    left: 0px;
-    border-color: transparent;
-    box-shadow: none;
-    opacity: 1;
-    background: none 0% 0% / auto repeat scroll padding-box border-box rgb(255, 255, 255);
-        max-width: 240px;
+	
 
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    outline: 0;
+    border-radius: 3px;
+    border: 1px solid #ddd;
 
 }
 

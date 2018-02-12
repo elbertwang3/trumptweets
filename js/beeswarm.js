@@ -446,12 +446,22 @@ chartAnnotation.select(".legendSize")
 		            return (data.data.x - 250)+"px";
               } 
           else if (cut == "timeofday") {
+            console.log(window.innerWidth);
+            console.log(timeofdayScale(parseTime(data.data.time_created))); 
+            if (timeofdayScale(parseTime(data.data.time_created)) > 750) {
+              return 500;
+            } else {
                 return timeofdayScale(parseTime(data.data.time_created)) - 250;
-              } 
+              }
+            } 
             else {
+              if (dateScale(data.data.date_created)  > 750) {
+                return 500;
+              } else {
             
                   return dateScale(data.data.date_created) - 250;
               }
+            }
 		    })
 		     
 		
