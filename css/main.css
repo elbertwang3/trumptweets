@@ -267,20 +267,20 @@ body {
 #vis {
 	display: inline-block;
 
-
+	position: absolute;
 
   max-width: 1000px;
 }
 
 .is_fixed {
-	position: fixed;
+	position: fixed !important;
 /*top: 115;*/
 	top: 0;
 
 }
 
 .is_unfixed {
-	position: absolute;
+	position: absolute !important;
 	/*top: 200;*/
 	top: 0;
 

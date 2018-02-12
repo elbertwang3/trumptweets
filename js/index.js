@@ -1,12 +1,23 @@
-  var vis = document.getElementById("vis")
-  var visstyle = vis.style;
-  var topoffset = vis.getBoundingClientRect().top
-  
+var vis;
+var topoffset;
+var bottomoffset;
+
+$(document).ready(function() { 
+ 	vis = document.getElementById("graphic")
+  topoffset = vis.getBoundingClientRect().top + 132.9375
+  bottomoffset = vis.getBoundingClientRect().bottom
+  console.log(window.pageYOffset);
+  console.log(topoffset);
+  console.log(bottomoffset);
+})
+
+ 
+ 
 
   $(window).scroll(function() {
-
-  	//console.log(window.pageYOffset)
-  	if (window.pageYOffset >= 2399 && window.pageYOffset <= 12869) {
+  	 
+  	console.log(window.pageYOffset)
+  	if (window.pageYOffset >= topoffset && window.pageYOffset <= 12869) {
 	  	//console.log("GETTING fixed")
 	  	d3.select("#vis").classed("is_fixed", true)
 	  	d3.select("#vis").classed("is_unfixed", false)

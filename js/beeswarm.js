@@ -83,7 +83,6 @@ var scrollVis = function(greatesthits) {
         .attr("class", "beesvg")
 
       beechart = $(".beesvg");
-console.log(beechart);
 if (window.innerWidth > 1000) {
    beeaspect = beechart.width() / beechart.height();
    beecontainer = beechart.parent();
@@ -161,7 +160,6 @@ worker.onmessage = function(event) {
   }
 };*/
 textfromjson = greatesthits.map(function(d) { return d['text']})
-console.log(textfromjson)
   new Awesomplete(input, {
     list: textfromjson
   });
@@ -402,13 +400,11 @@ chartAnnotation.select(".legendSize")
 
     $(window).on("resize", function() {
 
-      console.log(beecontainer);
    var targetWidth = beecontainer.width();
-   console.log(window.innerWidth);
    if (targetWidth > window.innerWidth) {
       targetWidth = window.innerWidth;
    }
-   console.log(targetWidth);
+
     beechart.attr("width", targetWidth);
     beechart.attr("height", Math.round(targetWidth / beeaspect));
     /*var b = path.bounds(jsonmap),
@@ -1220,7 +1216,6 @@ d3.queue()
     .await(display);
 
 function display(error,greatesthits) {
-  console.log(greatesthits);
 
 	var plot = scrollVis();
 
