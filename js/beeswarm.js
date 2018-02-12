@@ -86,7 +86,7 @@ var scrollVis = function(greatesthits) {
 if (window.innerWidth > 1000) {
    beeaspect = beechart.width() / beechart.height();
    beecontainer = beechart.parent();
-    beechart.attr("viewBox", "0 0 " + (beechart.width()) + " " + (beechart.height()))
+    //beechart.attr("viewBox", "0 0 " + (1000) + " " + (window.innerHeight))
 } else {
 
   beeaspect = window.innerWidth / window.innerHeight;
@@ -1083,11 +1083,11 @@ chartAnnotation.select(".legendSize")
     xticks.selectAll(".tick").remove()
     xtick = xticks.selectAll('g')
     .data([
-    'Jan 2013',  'Jul 2013',  
-    'Jan 2014', 'Jul 2014', 
-    'Jan 2015', 'Jul 2015', 
-    'Jan 2016', 'Jul 2016', 
-    'Jan 2017',  'Jul 2017', 
+    'Jan 2013', 
+    'Jan 2014', 
+    'Jan 2015', 
+    'Jan 2016', 
+    'Jan 2017', 
     'Jan 2018'])
     .enter()
     .append("g")
