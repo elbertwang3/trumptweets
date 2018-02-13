@@ -5,9 +5,10 @@ var scrollVis = function(greatesthits) {
 	bsmargin = {top: 40, right: 40, bottom: 50, left: 90};
   if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 1000) {
  // some code..
+ console.log("getting to mobile")
   bswidth = window.innerWidth;
 } else {
-     bswidth = 1000/1440 * window.innerWidth;
+     bswidth = 1000;
 }
    
     bsheight = window.innerHeight;
@@ -71,7 +72,7 @@ var scrollVis = function(greatesthits) {
 
 	var chart = function (selection) {
 	    selection.each(function (rawData) {
-	
+	   console.log(bswidth);
 	    	greatesthits = rawData;
 			bssvg = beeswarmdiv.append("svg")
         .attr("viewBox", "0 0 " + (bswidth) + " " + (bsheight))
@@ -419,8 +420,9 @@ chartAnnotation.select(".legendSize")
 
    
     if (window.innerWidth >= 1000) {
-      targetWidth = window.innerWidth - 400;
+      targetWidth = 1000;
     } else {
+      console.log('getting to innerwidth');
       targetWidth = window.innerWidth;
     }
     console.log(targetWidth);
