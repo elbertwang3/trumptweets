@@ -5,6 +5,13 @@ body {
 	margin: 0;
 }
 
+.beesvg {
+	display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+
+}
 #content {
 	position: relative;
 }
@@ -15,8 +22,10 @@ body {
   pointer-events: all;
 }
 .beeswarm {
-	position: relative;
-	max-width: 1000px;
+	display: inline-block;
+    position: relative;
+    width: 100%;
+    vertical-align: top;
 }
 .beeswarm .tooltip {
 
@@ -279,7 +288,6 @@ body {
 
 	position: absolute;
 	clear: both;
-  max-width: 1000px;
 }
 
 .is_fixed {
@@ -437,7 +445,7 @@ h2 {
 
 }
 
-@media only screen and (max-width: 600px) { 
+@media only screen and (max-width: 1000px) { 
 	#graphic {
 		
 		position: relative;

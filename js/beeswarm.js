@@ -3,17 +3,14 @@ var scrollVis = function(greatesthits) {
 	beeswarmdiv = d3.select('.beeswarm')
   input = document.getElementById("myinput");
 	bsmargin = {top: 40, right: 40, bottom: 50, left: 90};
-  if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 600) {
+  if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 1000) {
  // some code..
   bswidth = window.innerWidth;
-  bsheight = window.innerHeight;
 } else {
-   bswidth = 1000
+     bswidth = 1000/1440 * window.innerWidth;
 }
    
-    bsheight = window.innerHeight,
-    scatterwidth = 1000,
-    scatterheight = window.innerHeight
+    bsheight = window.innerHeight;
     var lastIndex = -1;
   	var activeIndex = 0;
 
@@ -77,23 +74,27 @@ var scrollVis = function(greatesthits) {
 	
 	    	greatesthits = rawData;
 			bssvg = beeswarmdiv.append("svg")
-       .attr("viewBox", "0 0 " + (bswidth) + " " + (bsheight))
+        .attr("viewBox", "0 0 " + (bswidth) + " " + (bsheight))
 				.attr("width", bswidth)
 				.attr("height", bsheight)
         .attr("class", "beesvg")
+        .attr("preserveAspectRatio", "none")
 
       beechart = $(".beesvg");
-if (window.innerWidth > 1000) {
+     
+    beeaspect = beechart.width() / beechart.height(),
+    beecontainer = beechart.parent();
+/*if (window.innerWidth > 1000) {
    beeaspect = beechart.width() / beechart.height();
    beecontainer = beechart.parent();
-    //beechart.attr("viewBox", "0 0 " + (1000) + " " + (window.innerHeight))
+    beechart.attr("viewBox", "0 0 " + (1000) + " " + (window.innerHeight))
 } else {
 
   beeaspect = window.innerWidth / window.innerHeight;
 
        beecontainer = beechart.parent();
         bssvg.attr("viewBox", "0 0 " + (window.innerWidth) + " " + (window.innerHeight))
-}
+}*/
 
 			var defs = bssvg.append("svg:defs")
 			defs
@@ -399,14 +400,36 @@ chartAnnotation.select(".legendSize")
     .attr("class", "text-labels")
 
     $(window).on("resize", function() {
+      console.log("getting resized");
+      /*if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 1000) {
+ // some code..
+  bswidth = window.innerWidth;
+} else {
+  console.log(window.innerWidth);
+   bswidth = 1000/1440 * window.innerWidth;
+}*/
 
-   var targetWidth = beecontainer.width();
-   if (targetWidth > window.innerWidth) {
+   //var targetWidth = bswidth;
+ 
+
+   
+     /*bssvg.attr("viewBox", "0 0 " + (targetWidth) + " " + (window.innerHeight))
+        beechart.attr("width", targetWidth);
+    beechart.attr("height", Math.round(window.innerHeight));*/
+
+   
+    if (window.innerWidth >= 1000) {
+      targetWidth = window.innerWidth - 400;
+    } else {
       targetWidth = window.innerWidth;
-   }
-
+    }
+    console.log(targetWidth);
+    console.log(beechart);
+    bssvg.attr("viewBox", "0 0 " + (targetWidth) + " " + (window.innerHeight))
     beechart.attr("width", targetWidth);
-    beechart.attr("height", Math.round(targetWidth / beeaspect));
+
+    beechart.attr("height", window.innerHeight);
+    
     /*var b = path.bounds(jsonmap),
       s = .95 / Math.max((b[1][0] - b[0][0]) / targetWidth, (b[1][1] - b[0][1]) / (targetWidth / peaksaspect)),
       t = [(targetWidth - s * (b[1][0] + b[0][0])) / 2, ((targetWidth / peaksaspect) - s * (b[1][1] + b[0][1])) / 2];
