@@ -105,10 +105,12 @@ body {
 
 #intro {
 	background-color: #00aced;
+	width: 100%;
 }
 
 #ending {
 	margin-top: 50px;
+	width: 100%;
 }
 
 
