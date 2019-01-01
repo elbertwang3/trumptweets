@@ -4,7 +4,6 @@ var bottomoffset;
 
 
  
- 
 
   $(window).scroll(function() {
 
@@ -12,7 +11,7 @@ var bottomoffset;
   	 bottomoffset = $("#graphic").position().top + $("#sections").outerHeight(true);
 
   	if (window.pageYOffset >= topoffset && window.pageYOffset <= bottomoffset - window.innerHeight) {
-	  	//console.log("GETTING fixed")
+
 	  	d3.select("#vis").classed("is_fixed", true)
 	  	d3.select("#vis").classed("is_unfixed", false)
 	  	d3.select("#vis").classed("is_bottom", false)

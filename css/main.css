@@ -282,6 +282,11 @@ body {
 	clear: both;
 }
 
+.svg {
+	display: block;
+	margin: auto;
+}
+
 .is_fixed {
 	position: fixed !important;
 /*top: 115;*/
